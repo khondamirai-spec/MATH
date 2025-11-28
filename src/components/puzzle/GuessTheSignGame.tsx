@@ -132,7 +132,7 @@ export default function GuessTheSignGame({ onBack }: GuessTheSignGameProps) {
         onClick={() => setIsTutorialOpen(true)}
         className="flex items-center justify-center gap-2 text-[var(--foreground-muted)] mb-8 hover:text-foreground transition-colors cursor-pointer w-full"
       >
-        <span className="uppercase tracking-widest text-sm font-semibold">GUESS THE SIGN</span>
+        <span className="uppercase tracking-widest text-sm font-semibold">BELGINI TOP</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -150,19 +150,71 @@ export default function GuessTheSignGame({ onBack }: GuessTheSignGameProps) {
         <div className={`relative z-10 w-full max-w-md bg-[var(--surface)] rounded-t-[2rem] p-6 pb-8 transition-transform duration-300 ease-out transform ${isTutorialOpen ? 'translate-y-0' : 'translate-y-full'} border-t border-[var(--foreground-muted)]/10 shadow-2xl`}>
             <div className="w-12 h-1 bg-[var(--foreground-muted)] rounded-full mx-auto mb-6 opacity-30" />
             
-            <h2 className="text-xl font-bold text-center mb-6 text-foreground">Guess the Sign</h2>
+            <h2 className="text-xl font-bold text-center mb-4 text-foreground">Belgini Top</h2>
             
-            <p className="text-center text-[var(--foreground-muted)] text-sm mb-8 leading-relaxed px-4">
-                Identify the correct mathematical operator<br/>
-                that completes the equation.<br/>
-                Be quick to earn more points!
+            {/* Mini Game Preview */}
+            <div className="bg-background rounded-2xl p-5 mb-5 relative overflow-hidden border border-[var(--foreground-muted)]/20 mx-2 shadow-inner">
+                <div className="flex justify-between items-center mb-3 opacity-50">
+                    <div className="w-7 h-7 rounded-full bg-[var(--surface)] flex items-center justify-center border border-[var(--foreground-muted)]/10">
+                        <span className="text-xs text-foreground">‹</span>
+                    </div>
+                    <div className="flex gap-1 text-xs font-bold text-foreground">
+                        <span>💎</span> 0
+                    </div>
+                </div>
+                
+                <div className="w-full h-1 bg-[var(--foreground-muted)]/20 rounded-full mb-4 overflow-hidden">
+                    <div className="h-full w-3/4 bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500"></div>
+                </div>
+                
+                <div className="text-center mb-2 text-[var(--foreground-muted)] text-[10px] tracking-widest uppercase">Belgini Top</div>
+                
+                {/* Sample Equation Display */}
+                <div className="text-center text-2xl font-bold mb-4 text-foreground flex justify-center items-center gap-2">
+                    <span>6</span>
+                    <div className="w-8 h-8 bg-[var(--surface)] rounded-lg border border-[var(--foreground-muted)]/20 flex items-center justify-center">
+                        <span className="text-base text-[var(--foreground-muted)]">?</span>
+                    </div>
+                    <span>3</span>
+                    <span>=</span>
+                    <span>2</span>
+                </div>
+                
+                {/* Mini Operator Buttons */}
+                <div className="grid grid-cols-4 gap-2 px-4">
+                    {["÷", "×", "+", "−"].map((op) => (
+                        <div 
+                            key={op}
+                            className="aspect-square rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 text-white text-sm font-bold flex items-center justify-center shadow-sm"
+                        >
+                            {op}
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <p className="text-center text-[var(--foreground-muted)] text-sm mb-6 leading-relaxed px-4">
+                Tenglamani to'ldiruvchi to'g'ri<br/>
+                matematik amalni aniqlang.<br/>
+                Ko'proq ball yig'ish uchun tez bo'ling!
             </p>
+            
+            <div className="flex flex-col gap-2 mb-6 px-8">
+                <div className="flex justify-between items-center">
+                    <span className="text-foreground font-medium">+1.0</span>
+                    <span className="text-[var(--foreground-muted)] text-sm">to'g'ri javob uchun</span>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="text-foreground font-medium">-1.0</span>
+                    <span className="text-[var(--foreground-muted)] text-sm">noto'g'ri javob uchun</span>
+                </div>
+            </div>
 
             <button 
                 onClick={() => setIsTutorialOpen(false)}
                 className="w-full py-4 rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold tracking-wide shadow-lg shadow-orange-900/20 active:scale-95 transition-transform uppercase text-sm"
             >
-                Got it!
+                Tushundim!
             </button>
         </div>
       </div>

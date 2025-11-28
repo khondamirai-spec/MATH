@@ -137,7 +137,7 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
         onClick={() => setIsTutorialOpen(true)}
         className="flex items-center justify-center gap-2 text-[var(--foreground-muted)] mb-4 hover:text-foreground transition-colors cursor-pointer w-full"
       >
-        <span className="uppercase tracking-widest text-sm font-semibold">CALCULATOR</span>
+        <span className="uppercase tracking-widest text-sm font-semibold">KALKULYATOR</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -158,7 +158,7 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
             {/* Handle */}
             <div className="w-12 h-1 bg-[var(--foreground-muted)] rounded-full mx-auto mb-6 opacity-30" />
             
-            <h2 className="text-xl font-bold text-center mb-6 text-foreground">Calculator</h2>
+            <h2 className="text-xl font-bold text-center mb-6 text-foreground">Kalkulyator</h2>
             
             {/* Mini Game Preview */}
             <div className="bg-background rounded-2xl p-6 mb-6 relative overflow-hidden border border-[var(--foreground-muted)]/20 mx-4 shadow-inner">
@@ -178,26 +178,26 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
                     <div className="h-full w-3/4 bg-blue-500"></div>
                 </div>
                 
-                <div className="text-center mb-2 text-[var(--foreground-muted)] text-[10px] tracking-widest uppercase">Calculator</div>
+                <div className="text-center mb-2 text-[var(--foreground-muted)] text-[10px] tracking-widest uppercase">Kalkulyator</div>
                 <div className="text-center text-2xl font-bold mb-2 text-foreground flex justify-center items-center gap-3">
                     6 / 3 = <div className="w-10 h-10 bg-[var(--surface)] rounded-lg border border-[var(--foreground-muted)]/20"></div>
                 </div>
             </div>
 
             <p className="text-center text-[var(--foreground-muted)] text-sm mb-8 leading-relaxed px-4">
-                Solve simple equation one by one.<br/>
-                Faster you solve, more time will be<br/>
-                given to solve next equation.
+                Oddiy tenglamalarni birma-bir yeching.<br/>
+                Qanchalik tez yechsangiz, keyingi<br/>
+                tenglama uchun shunchalik ko'p vaqt beriladi.
             </p>
 
             <div className="flex flex-col gap-3 mb-8 px-8">
                 <div className="flex justify-between items-center">
                     <span className="text-foreground font-medium">1.0</span>
-                    <span className="text-[var(--foreground-muted)] text-sm">for correct answer</span>
+                    <span className="text-[var(--foreground-muted)] text-sm">to'g'ri javob uchun</span>
                 </div>
                 <div className="flex justify-between items-center">
                     <span className="text-foreground font-medium">-1.0</span>
-                    <span className="text-[var(--foreground-muted)] text-sm">for wrong answer</span>
+                    <span className="text-[var(--foreground-muted)] text-sm">noto'g'ri javob uchun</span>
                 </div>
             </div>
 
@@ -205,7 +205,7 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
                 onClick={() => setIsTutorialOpen(false)}
                 className="w-full py-4 rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold tracking-wide shadow-lg shadow-orange-900/20 active:scale-95 transition-transform uppercase text-sm"
             >
-                Got it!
+                Tushundim!
             </button>
         </div>
       </div>
@@ -238,7 +238,7 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
             onClick={handleClear}
             className="aspect-square rounded-xl bg-[var(--surface)] hover:brightness-110 text-foreground text-lg font-medium active:scale-95 transition-transform flex items-center justify-center shadow-sm border border-[var(--foreground-muted)]/10"
         >
-            Clear
+            Tozalash
         </button>
         
         <button

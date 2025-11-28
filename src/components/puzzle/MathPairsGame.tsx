@@ -232,7 +232,7 @@ export default function MathPairsGame({ onBack }: MathPairsGameProps) {
       </div>
 
       <div className="flex items-center justify-center gap-2 text-[var(--foreground-muted)] mb-8">
-        <span className="uppercase tracking-widest text-sm font-semibold">MATH PAIRS</span>
+        <span className="uppercase tracking-widest text-sm font-semibold">MATEMATIK JUFTLIKLAR</span>
         <button onClick={() => setIsTutorialOpen(true)} className="w-4 h-4 rounded-full border border-current flex items-center justify-center text-[10px]">i</button>
       </div>
 
@@ -244,30 +244,84 @@ export default function MathPairsGame({ onBack }: MathPairsGameProps) {
         />
         <div className={`relative z-10 w-full max-w-md bg-[var(--surface)] rounded-t-[2rem] p-6 pb-8 transition-transform duration-300 ease-out transform ${isTutorialOpen ? 'translate-y-0' : 'translate-y-full'} border-t border-[var(--foreground-muted)]/10 shadow-2xl`}>
             <div className="w-12 h-1 bg-[var(--foreground-muted)] rounded-full mx-auto mb-6 opacity-30" />
-            <h2 className="text-xl font-bold text-center mb-6 text-foreground">Math Pairs</h2>
+            <h2 className="text-xl font-bold text-center mb-4 text-foreground">Matematik Juftliklar</h2>
             
-            <p className="text-center text-[var(--foreground-muted)] text-sm mb-8 leading-relaxed px-4">
-                Find pairs of cards that have the same value.<br/>
-                Match a number with its math equation.<br/>
-                Example: "4" matches "2 + 2"
+            {/* Mini Game Preview */}
+            <div className="bg-background rounded-2xl p-4 mb-5 relative overflow-hidden border border-[var(--foreground-muted)]/20 mx-2 shadow-inner">
+                <div className="flex justify-between items-center mb-2 opacity-50">
+                    <div className="w-6 h-6 rounded-full bg-[var(--surface)] flex items-center justify-center border border-[var(--foreground-muted)]/10">
+                        <span className="text-[10px] text-foreground">‹</span>
+                    </div>
+                    <div className="flex gap-1 text-[10px] font-bold text-foreground">
+                        <span>💎</span> 0
+                    </div>
+                </div>
+                
+                <div className="w-full h-1 bg-[var(--foreground-muted)]/20 rounded-full mb-1 overflow-hidden">
+                    <div className="h-full w-full bg-gradient-to-r from-orange-500 via-red-500 to-pink-500"></div>
+                </div>
+                
+                <div className="text-center text-[8px] font-mono text-[var(--foreground-muted)] mb-2">60s</div>
+                
+                <div className="text-center mb-2 text-[var(--foreground-muted)] text-[8px] tracking-widest uppercase">Matematik Juftliklar</div>
+                
+                {/* Mini Card Grid - showing match example */}
+                <div className="grid grid-cols-4 gap-1.5">
+                    {/* Row 1 */}
+                    <div className="aspect-[4/5] rounded-lg bg-[var(--surface)] border border-[var(--foreground-muted)]/20 flex items-center justify-center">
+                        <span className="text-sm text-[var(--foreground-muted)] opacity-50">?</span>
+                    </div>
+                    <div className="aspect-[4/5] rounded-lg bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] flex items-center justify-center shadow-sm">
+                        <span className="text-[10px] text-white font-bold">4</span>
+                    </div>
+                    <div className="aspect-[4/5] rounded-lg bg-[var(--surface)] border border-[var(--foreground-muted)]/20 flex items-center justify-center">
+                        <span className="text-sm text-[var(--foreground-muted)] opacity-50">?</span>
+                    </div>
+                    <div className="aspect-[4/5] rounded-lg bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] flex items-center justify-center shadow-sm">
+                        <span className="text-[8px] text-white font-bold">2 + 2</span>
+                    </div>
+                    {/* Row 2 */}
+                    <div className="aspect-[4/5] rounded-lg bg-[var(--surface)] border border-[var(--foreground-muted)]/20 flex items-center justify-center">
+                        <span className="text-sm text-[var(--foreground-muted)] opacity-50">?</span>
+                    </div>
+                    <div className="aspect-[4/5] rounded-lg bg-[var(--surface)] border border-[var(--foreground-muted)]/20 flex items-center justify-center">
+                        <span className="text-sm text-[var(--foreground-muted)] opacity-50">?</span>
+                    </div>
+                    <div className="aspect-[4/5] rounded-lg bg-[var(--surface)] border border-[var(--foreground-muted)]/20 flex items-center justify-center">
+                        <span className="text-sm text-[var(--foreground-muted)] opacity-50">?</span>
+                    </div>
+                    <div className="aspect-[4/5] rounded-lg bg-[var(--surface)] border border-[var(--foreground-muted)]/20 flex items-center justify-center">
+                        <span className="text-sm text-[var(--foreground-muted)] opacity-50">?</span>
+                    </div>
+                </div>
+                
+                {/* Match indicator */}
+                <div className="mt-2 text-center">
+                    <span className="text-[10px] text-green-500 font-medium">✓ Mos keldi!</span>
+                </div>
+            </div>
+
+            <p className="text-center text-[var(--foreground-muted)] text-sm mb-6 leading-relaxed px-4">
+                Bir xil qiymatga ega kartochkalarni toping.<br/>
+                Raqamni uning matematik tenglamasi bilan moslang.
             </p>
 
-            <div className="flex flex-col gap-3 mb-8 px-8">
+            <div className="flex flex-col gap-2 mb-6 px-8">
                 <div className="flex justify-between items-center">
                     <span className="text-foreground font-medium">+10</span>
-                    <span className="text-[var(--foreground-muted)] text-sm">for match</span>
+                    <span className="text-[var(--foreground-muted)] text-sm">mos kelganda</span>
                 </div>
                 <div className="flex justify-between items-center">
                     <span className="text-foreground font-medium">-2</span>
-                    <span className="text-[var(--foreground-muted)] text-sm">for mismatch</span>
+                    <span className="text-[var(--foreground-muted)] text-sm">mos kelmasa</span>
                 </div>
             </div>
 
             <button 
                 onClick={() => setIsTutorialOpen(false)}
-                className="w-full py-4 rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold tracking-wide shadow-lg shadow-orange-900/20 active:scale-95 transition-transform uppercase text-sm"
+                className="w-full py-4 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold tracking-wide shadow-lg shadow-blue-900/20 active:scale-95 transition-transform uppercase text-sm"
             >
-                Got it!
+                Tushundim!
             </button>
         </div>
       </div>
@@ -307,20 +361,20 @@ export default function MathPairsGame({ onBack }: MathPairsGameProps) {
       {/* Win State */}
       {isGameOver && (
         <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/90 backdrop-blur-md animate-in fade-in">
-            <h2 className="text-4xl font-bold text-foreground mb-4">Time's Up!</h2>
-            <p className="text-2xl text-[var(--foreground-muted)] mb-8">Score: {score}</p>
+            <h2 className="text-4xl font-bold text-foreground mb-4">Vaqt tugadi!</h2>
+            <p className="text-2xl text-[var(--foreground-muted)] mb-8">Ball: {score}</p>
             <div className="flex gap-4">
                 <button 
                     onClick={handleRestart}
                     className="px-8 py-3 rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold hover:opacity-90 transition-opacity shadow-lg shadow-orange-900/20"
                 >
-                    Play Again
+                    Qayta o'ynash
                 </button>
                 <button 
                     onClick={onBack}
                     className="px-8 py-3 bg-[var(--surface)] text-foreground border border-[var(--foreground-muted)]/20 rounded-full font-bold hover:bg-[var(--surface)]/80 transition-colors"
                 >
-                    Exit
+                    Chiqish
                 </button>
             </div>
         </div>

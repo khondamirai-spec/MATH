@@ -199,6 +199,12 @@ body {
   border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
+.train-puzzle .math-eyebrow {
+  color: #d946ef;
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.15), rgba(225, 29, 72, 0.15));
+  border: 1px solid rgba(147, 51, 234, 0.3);
+}
+
 .math-title {
   font-size: clamp(1.75rem, 5vw, 2.5rem);
   font-weight: 800;
@@ -212,6 +218,13 @@ body {
 
 .memory-puzzle .math-title {
   background: linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #ea580c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.train-puzzle .math-title {
+  background: linear-gradient(135deg, #9333ea 0%, #c026d3 50%, #e11d48 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

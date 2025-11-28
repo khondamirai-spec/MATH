@@ -187,7 +187,7 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
           onClick={() => setIsTutorialOpen(true)}
           className="text-xs font-bold text-[var(--foreground-muted)] tracking-widest mb-2 uppercase hover:text-foreground transition-colors cursor-pointer"
         >
-          MATH GRID ℹ
+          MATEMATIK TO'R ℹ
         </button>
         <div className="text-6xl font-bold text-foreground mb-2 transition-all scale-110">{target}</div>
         {message && (
@@ -228,7 +228,7 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
       </div>
       
       <div className="mt-4 text-center text-[var(--foreground-muted)] text-sm">
-         Current Sum: <span className={`font-bold ${currentSum > target ? 'text-red-500' : 'text-foreground'}`}>{currentSum}</span>
+         Joriy yig'indi: <span className={`font-bold ${currentSum > target ? 'text-red-500' : 'text-foreground'}`}>{currentSum}</span>
       </div>
 
       {/* Tutorial Modal */}
@@ -244,11 +244,11 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
             {/* Handle */}
             <div className="w-12 h-1 bg-[var(--foreground-muted)] rounded-full mx-auto mb-6 opacity-30" />
             
-            <h2 className="text-xl font-bold text-center mb-6 text-foreground">Math Grid</h2>
+            <h2 className="text-xl font-bold text-center mb-6 text-foreground">Matematik To'r</h2>
             
             <div className="bg-background p-4 rounded-xl mb-6 border border-[var(--foreground-muted)]/20">
                 <div className="text-4xl font-bold text-foreground mb-4">{target || 21}</div>
-                <h3 className="text-foreground font-bold text-xl mb-2">Select number from grid<br/>to reach shown answer</h3>
+                <h3 className="text-foreground font-bold text-xl mb-2">Ko'rsatilgan javobga yetish uchun<br/>to'rdan raqamlarni tanlang</h3>
                 
                 {/* Mini Grid Visual */}
                 <div className="grid grid-cols-6 gap-1 w-full max-w-[200px] mx-auto opacity-50 mb-4">
@@ -261,17 +261,17 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
             </div>
 
             <p className="text-[var(--foreground-muted)] text-sm mb-6 leading-relaxed px-4">
-                Select number from math grid to reach answer shown above. You can select any number to reach above answer.
+                Yuqorida ko'rsatilgan javobga yetish uchun matematik to'rdan raqamlarni tanlang. Yuqoridagi javobga yetish uchun istalgan raqamni tanlashingiz mumkin.
             </p>
 
             <div className="flex flex-col gap-3 mb-8 px-8">
                 <div className="flex justify-between items-center">
                     <span className="text-foreground font-medium">5.0</span>
-                    <span className="text-[var(--foreground-muted)] text-sm">for correct answer</span>
+                    <span className="text-[var(--foreground-muted)] text-sm">to'g'ri javob uchun</span>
                 </div>
                 <div className="flex justify-between items-center">
                     <span className="text-foreground font-medium">-5.0</span>
-                    <span className="text-[var(--foreground-muted)] text-sm">for wrong answer</span>
+                    <span className="text-[var(--foreground-muted)] text-sm">noto'g'ri javob uchun</span>
                 </div>
             </div>
 
@@ -279,7 +279,7 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
                 onClick={() => setIsTutorialOpen(false)}
                 className="w-full py-4 rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold tracking-wide shadow-lg shadow-orange-900/20 active:scale-95 transition-transform uppercase text-sm"
             >
-                Got it!
+                Tushundim!
             </button>
         </div>
       </div>
@@ -288,8 +288,8 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
       {isGameOver && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/90 backdrop-blur-md">
              <div className="bg-[var(--surface)] border border-[var(--foreground-muted)]/20 p-8 rounded-3xl w-full max-w-sm text-center">
-                <h2 className="text-3xl font-bold text-foreground mb-2">{timeLeft <= 0 ? "Time's Up!" : "Paused"}</h2>
-                <p className="text-xl text-[var(--foreground-muted)] mb-8">Score: {score.toFixed(1)}</p>
+                <h2 className="text-3xl font-bold text-foreground mb-2">{timeLeft <= 0 ? "Vaqt tugadi!" : "To'xtatildi"}</h2>
+                <p className="text-xl text-[var(--foreground-muted)] mb-8">Ball: {score.toFixed(1)}</p>
                 
                 <div className="flex flex-col gap-3">
                     {timeLeft > 0 && (
@@ -297,20 +297,20 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
                             onClick={() => setIsGameOver(false)}
                             className="w-full py-3 bg-[var(--surface)]/80 text-foreground border border-[var(--foreground-muted)]/20 font-bold rounded-full hover:bg-[var(--surface)] transition-colors"
                         >
-                            Resume
+                            Davom etish
                         </button>
                     )}
                     <button 
                         onClick={handleRestart}
                         className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold rounded-full hover:opacity-90 transition-opacity shadow-lg shadow-orange-900/20"
                     >
-                        New Game
+                        Yangi o'yin
                     </button>
                     <button 
                         onClick={onBack}
                         className="w-full py-3 bg-transparent border border-[var(--foreground-muted)]/20 text-foreground font-bold rounded-full hover:bg-[var(--surface)]/50 transition-colors"
                     >
-                        Exit
+                        Chiqish
                     </button>
                 </div>
              </div>

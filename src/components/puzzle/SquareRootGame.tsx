@@ -123,7 +123,7 @@ export default function SquareRootGame({ onBack }: SquareRootGameProps) {
         onClick={() => setIsTutorialOpen(true)}
         className="flex items-center justify-center gap-2 text-[var(--foreground-muted)] mb-12 hover:text-foreground transition-colors cursor-pointer w-full"
       >
-        <span className="uppercase tracking-widest text-sm font-semibold">SQUARE ROOT</span>
+        <span className="uppercase tracking-widest text-sm font-semibold">KVADRAT ILDIZ</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
            <circle cx="12" cy="12" r="10"></circle>
            <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -164,11 +164,11 @@ export default function SquareRootGame({ onBack }: SquareRootGameProps) {
             {/* Handle */}
             <div className="w-12 h-1 bg-[var(--foreground-muted)] rounded-full mx-auto mb-6 opacity-30" />
             
-            <h2 className="text-xl font-bold text-center mb-6 text-foreground">Square Root</h2>
+            <h2 className="text-xl font-bold text-center mb-6 text-foreground">Kvadrat Ildiz</h2>
             
             {/* Mini Game Preview */}
             <div className="bg-background rounded-2xl p-6 mb-6 relative overflow-hidden border border-[var(--foreground-muted)]/20 mx-4 shadow-inner">
-                <div className="text-center mb-4 text-[var(--foreground-muted)] text-[10px] tracking-widest uppercase">Square Root</div>
+                <div className="text-center mb-4 text-[var(--foreground-muted)] text-[10px] tracking-widest uppercase">Kvadrat Ildiz</div>
                 <div className="text-center text-3xl font-bold mb-6 text-foreground">
                     √64
                 </div>
@@ -179,19 +179,19 @@ export default function SquareRootGame({ onBack }: SquareRootGameProps) {
             </div>
 
             <p className="text-center text-[var(--foreground-muted)] text-sm mb-8 leading-relaxed px-4">
-                Select the correct square root.<br/>
-                Faster you solve, more time will be<br/>
-                given to solve next equation.
+                To'g'ri kvadrat ildizni tanlang.<br/>
+                Qanchalik tez yechsangiz, keyingi<br/>
+                tenglama uchun shunchalik ko'p vaqt beriladi.
             </p>
 
             <div className="flex flex-col gap-3 mb-8 px-8">
                 <div className="flex justify-between items-center">
                     <span className="text-foreground font-medium">1.0</span>
-                    <span className="text-[var(--foreground-muted)] text-sm">for correct answer</span>
+                    <span className="text-[var(--foreground-muted)] text-sm">to'g'ri javob uchun</span>
                 </div>
                 <div className="flex justify-between items-center">
                     <span className="text-foreground font-medium">-1.0</span>
-                    <span className="text-[var(--foreground-muted)] text-sm">for wrong answer</span>
+                    <span className="text-[var(--foreground-muted)] text-sm">noto'g'ri javob uchun</span>
                 </div>
             </div>
 
@@ -199,7 +199,7 @@ export default function SquareRootGame({ onBack }: SquareRootGameProps) {
                 onClick={() => setIsTutorialOpen(false)}
                 className="w-full py-4 rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold tracking-wide shadow-lg shadow-orange-900/20 active:scale-95 transition-transform uppercase text-sm"
             >
-                Play
+                O'ynash
             </button>
         </div>
       </div>

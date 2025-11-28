@@ -181,11 +181,11 @@ export default function MentalArithmeticGame({ onBack }: MentalArithmeticGamePro
       if (val === targetAnswer) {
           setScore(s => s + 2);
           // Show success feedback
-          setDisplayContent("Correct!");
+          setDisplayContent("To'g'ri!");
           setTimeout(startGame, 1000);
       } else {
           setScore(s => s - 1);
-          setDisplayContent(`Wrong! (${targetAnswer})`);
+          setDisplayContent(`Noto'g'ri! (${targetAnswer})`);
           setTimeout(startGame, 2000);
       }
   };
@@ -212,7 +212,7 @@ export default function MentalArithmeticGame({ onBack }: MentalArithmeticGamePro
 
       {/* Title */}
       <div className="flex items-center justify-center gap-2 text-[var(--foreground-muted)] mb-4 w-full">
-        <span className="uppercase tracking-widest text-sm font-semibold">MENTAL ARITHMETIC</span>
+        <span className="uppercase tracking-widest text-sm font-semibold">OG'ZAKI HISOB</span>
         <button onClick={() => setGameState('tutorial')} className="w-4 h-4 rounded-full border border-current flex items-center justify-center text-[10px]">i</button>
       </div>
 
@@ -222,25 +222,25 @@ export default function MentalArithmeticGame({ onBack }: MentalArithmeticGamePro
             <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => startGame()} />
             <div className="relative z-10 w-full max-w-md bg-[var(--surface)] rounded-t-[2rem] p-6 pb-8 animate-in slide-in-from-bottom duration-300">
                 <div className="w-12 h-1 bg-[var(--foreground-muted)] rounded-full mx-auto mb-6 opacity-30" />
-                <h2 className="text-xl font-bold text-center mb-6 text-foreground">Mental Arithmetic</h2>
+                <h2 className="text-xl font-bold text-center mb-6 text-foreground">Og'zaki Hisob</h2>
                 
                 <div className="bg-background rounded-2xl p-6 mb-6 border border-[var(--foreground-muted)]/20 mx-4 text-center">
                     <div className="text-4xl font-bold mb-2">4</div>
-                    <div className="text-sm text-[var(--foreground-muted)]">Remember the sequence</div>
+                    <div className="text-sm text-[var(--foreground-muted)]">Ketma-ketlikni eslab qoling</div>
                 </div>
 
                 <p className="text-center text-[var(--foreground-muted)] text-sm mb-8 leading-relaxed px-4">
-                    Number with operator will be shown one by one. You need to remember the number with operator and write final answer (No precedency).
+                    Raqam va amal birma-bir ko'rsatiladi. Raqam va amalni eslab qoling va oxirgi javobni yozing (Amallar tartibi yo'q).
                 </p>
 
                 <div className="flex flex-col gap-3 mb-8 px-8">
                     <div className="flex justify-between items-center">
                         <span className="text-foreground font-medium">2.0</span>
-                        <span className="text-[var(--foreground-muted)] text-sm">for correct answer</span>
+                        <span className="text-[var(--foreground-muted)] text-sm">to'g'ri javob uchun</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="text-foreground font-medium">-1.0</span>
-                        <span className="text-[var(--foreground-muted)] text-sm">for wrong answer</span>
+                        <span className="text-[var(--foreground-muted)] text-sm">noto'g'ri javob uchun</span>
                     </div>
                 </div>
 
@@ -248,7 +248,7 @@ export default function MentalArithmeticGame({ onBack }: MentalArithmeticGamePro
                     onClick={startGame}
                     className="w-full py-4 rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold tracking-wide shadow-lg active:scale-95 transition-transform uppercase text-sm"
                 >
-                    Got it!
+                    Tushundim!
                 </button>
             </div>
         </div>
@@ -257,7 +257,7 @@ export default function MentalArithmeticGame({ onBack }: MentalArithmeticGamePro
       {/* Game Display */}
       <div className="flex-1 flex flex-col items-center justify-center mb-4 relative">
         {gameState === 'ready' && (
-            <div className="text-2xl text-[var(--foreground-muted)] animate-pulse">Get Ready...</div>
+            <div className="text-2xl text-[var(--foreground-muted)] animate-pulse">Tayyorlaning...</div>
         )}
         
         {(gameState === 'showing' || gameState === 'input' || gameState === 'feedback') && (
@@ -290,7 +290,7 @@ export default function MentalArithmeticGame({ onBack }: MentalArithmeticGamePro
             onClick={handleClear}
             className="aspect-square rounded-xl bg-[var(--surface)] text-foreground text-lg font-medium active:scale-95 transition-transform flex items-center justify-center shadow-sm border border-[var(--foreground-muted)]/10"
         >
-            Clear
+            Tozalash
         </button>
         
         <button

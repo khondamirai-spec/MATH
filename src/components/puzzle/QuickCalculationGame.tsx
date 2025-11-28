@@ -138,20 +138,20 @@ export default function QuickCalculationGame({ onBack }: QuickCalculationGamePro
   if (isGameOver) {
     return (
       <div className="flex flex-col h-screen bg-background text-foreground items-center justify-center p-4">
-        <h1 className="text-4xl font-bold mb-4">Time's Up!</h1>
-        <p className="text-2xl mb-8">Score: {score}</p>
+        <h1 className="text-4xl font-bold mb-4">Vaqt tugadi!</h1>
+        <p className="text-2xl mb-8">Ball: {score}</p>
         <div className="flex gap-4">
           <button 
             onClick={handleRestart}
             className="px-8 py-3 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-700 transition-colors"
           >
-            Play Again
+            Qayta o'ynash
           </button>
           <button 
             onClick={onBack}
             className="px-8 py-3 bg-[var(--surface)] text-foreground border border-[var(--foreground-muted)]/20 rounded-full font-bold hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
-            Exit
+            Chiqish
           </button>
         </div>
       </div>
@@ -195,7 +195,7 @@ export default function QuickCalculationGame({ onBack }: QuickCalculationGamePro
         onClick={() => setIsTutorialOpen(true)}
         className="flex items-center justify-center gap-2 text-[var(--foreground-muted)] mb-4 hover:text-foreground transition-colors cursor-pointer w-full"
       >
-        <span className="uppercase tracking-widest text-sm font-semibold">QUICK CALCULATION</span>
+        <span className="uppercase tracking-widest text-sm font-semibold">TEZ HISOBLASH</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -211,22 +211,58 @@ export default function QuickCalculationGame({ onBack }: QuickCalculationGamePro
         />
         <div className={`relative z-10 w-full max-w-md bg-[var(--surface)] rounded-t-[2rem] p-6 pb-8 transition-transform duration-300 ease-out transform ${isTutorialOpen ? 'translate-y-0' : 'translate-y-full'} border-t border-[var(--foreground-muted)]/10 shadow-2xl`}>
             <div className="w-12 h-1 bg-[var(--foreground-muted)] rounded-full mx-auto mb-6 opacity-30" />
-            <h2 className="text-xl font-bold text-center mb-6 text-foreground">Quick Calculation</h2>
-            <div className="text-center text-[var(--foreground-muted)] text-sm mb-8 leading-relaxed px-4">
-                Solve the equations as fast as you can.<br/>
-                Watch the next question to stay ahead!
+            <h2 className="text-xl font-bold text-center mb-4 text-foreground">Tez Hisoblash</h2>
+            
+            {/* Mini Game Preview */}
+            <div className="bg-background rounded-2xl p-5 mb-5 relative overflow-hidden border border-[var(--foreground-muted)]/20 mx-2 shadow-inner">
+                <div className="flex justify-between items-center mb-3 opacity-50">
+                    <div className="w-7 h-7 rounded-full bg-[var(--surface)] flex items-center justify-center border border-[var(--foreground-muted)]/10">
+                        <span className="text-xs text-foreground">‹</span>
+                    </div>
+                    <div className="flex gap-1 text-xs font-bold text-foreground">
+                        <span>💎</span> 0
+                    </div>
+                </div>
+                
+                <div className="w-full h-1 bg-[var(--foreground-muted)]/20 rounded-full mb-2 overflow-hidden">
+                    <div className="h-full w-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500"></div>
+                </div>
+                
+                <div className="text-center text-[10px] font-mono text-[var(--foreground-muted)] mb-3">60s</div>
+                
+                <div className="text-center mb-1 text-[var(--foreground-muted)] text-[10px] tracking-widest uppercase">Tez Hisoblash</div>
+                
+                {/* Next Question Preview */}
+                <div className="mb-3 opacity-50 scale-90 origin-left">
+                    <div className="text-[8px] uppercase tracking-wider text-[var(--foreground-muted)] mb-0.5">Keyingi</div>
+                    <div className="text-xs font-mono text-[var(--foreground-muted)]">3 + 7</div>
+                </div>
+                
+                {/* Sample Equation Display */}
+                <div className="text-center text-xl font-bold text-foreground flex justify-center items-center gap-2">
+                    <span>8 × 5</span>
+                    <span>=</span>
+                    <div className="w-10 h-8 bg-[var(--surface)] rounded-lg border border-[var(--foreground-muted)]/20 flex items-center justify-center">
+                        <span className="text-base text-blue-500 animate-pulse">|</span>
+                    </div>
+                </div>
             </div>
-            <div className="flex flex-col gap-3 mb-8 px-8">
+
+            <div className="text-center text-[var(--foreground-muted)] text-sm mb-6 leading-relaxed px-4">
+                Tenglamalarni iloji boricha tez yeching.<br/>
+                Oldinda bo'lish uchun keyingi savolni kuzating!
+            </div>
+            <div className="flex flex-col gap-2 mb-6 px-8">
                 <div className="flex justify-between items-center">
                     <span className="text-foreground font-medium">+1s</span>
-                    <span className="text-[var(--foreground-muted)] text-sm">time bonus per question</span>
+                    <span className="text-[var(--foreground-muted)] text-sm">har bir savol uchun vaqt bonusi</span>
                 </div>
             </div>
             <button 
                 onClick={() => setIsTutorialOpen(false)}
                 className="w-full py-4 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold tracking-wide shadow-lg shadow-blue-900/20 active:scale-95 transition-transform uppercase text-sm"
             >
-                Start Playing
+                O'yinni boshlash
             </button>
         </div>
       </div>
@@ -235,7 +271,7 @@ export default function QuickCalculationGame({ onBack }: QuickCalculationGamePro
       <div className="flex-1 flex flex-col items-center justify-center mb-4 relative">
         {/* Next Question Preview */}
         <div className="absolute -top-8 left-4 text-left opacity-50 scale-90 origin-top-left">
-            <div className="text-[10px] uppercase tracking-wider text-[var(--foreground-muted)] mb-1">Next</div>
+            <div className="text-[10px] uppercase tracking-wider text-[var(--foreground-muted)] mb-1">Keyingi</div>
             <div className="text-lg font-mono text-[var(--foreground-muted)]">
                 {nextQ ? nextQ.expression.replace('/', '÷').replace('*', '×') : "..."}
             </div>
@@ -273,7 +309,7 @@ export default function QuickCalculationGame({ onBack }: QuickCalculationGamePro
             onClick={handleClear}
             className="aspect-square rounded-xl bg-[var(--surface)] hover:brightness-110 text-foreground text-lg font-medium active:scale-95 transition-transform flex items-center justify-center shadow-sm border border-[var(--foreground-muted)]/10"
         >
-            Clear
+            Tozalash
         </button>
         
         <button

@@ -9,35 +9,35 @@ import QuickCalculationGame from "@/components/puzzle/QuickCalculationGame";
 
 const mathModes: PuzzleMode[] = [
   {
-    title: "Calculator",
+    title: "Kalkulyator",
     score: 15,
     icon: "hourglass",
-    subtitle: "Classic mode • Beat the clock",
-    scoreLabel: "Calculator Score",
-    background: "linear-gradient(135deg, #14b8a6 0%, #06b6d4 55%, #3b82f6 100%)",
+    subtitle: "Klassik rejim • Vaqtni yeng",
+    scoreLabel: "Kalkulyator bali",
+    background: "linear-gradient(135deg, #0f172a 0%, #0891b2 50%, #22d3ee 100%)",
   },
   {
-    title: "Guess the sign?",
+    title: "Belgini top",
     score: 0,
     icon: "question",
-    subtitle: "Fill in the correct operators",
-    scoreLabel: "Sign Score",
-    background: "linear-gradient(135deg, #0f172a 0%, #3b82f6 60%, #6366f1 100%)",
+    subtitle: "To'g'ri amalni tanlang",
+    scoreLabel: "Belgi bali",
+    background: "linear-gradient(135deg, #0f172a 0%, #0891b2 50%, #22d3ee 100%)",
   },
   {
-    title: "Correct answer",
+    title: "To'g'ri javob",
     score: 0,
     icon: "clipboard",
-    subtitle: "Choose the right result",
-    scoreLabel: "Accuracy Score",
-    background: "linear-gradient(135deg, #1e1b4b 0%, #6366f1 50%, #a855f7 100%)",
+    subtitle: "To'g'ri natijani tanlang",
+    scoreLabel: "Aniqlik bali",
+    background: "linear-gradient(135deg, #0f172a 0%, #0891b2 50%, #22d3ee 100%)",
   },
   {
-    title: "Quick calculation",
+    title: "Tez hisoblash",
     score: 0,
     icon: "bolt",
-    subtitle: "Rapid-fire equations",
-    scoreLabel: "Speed Score",
+    subtitle: "Tezkor tenglamalar",
+    scoreLabel: "Tezlik bali",
     background: "linear-gradient(135deg, #0f172a 0%, #0891b2 50%, #22d3ee 100%)",
   },
 ];
@@ -45,27 +45,27 @@ const mathModes: PuzzleMode[] = [
 export default function MathPuzzlePage() {
   const [activeGame, setActiveGame] = useState<string | null>(null);
 
-  if (activeGame === "Calculator") {
+  if (activeGame === "Kalkulyator") {
     return <CalculatorGame onBack={() => setActiveGame(null)} />;
   }
 
-  if (activeGame === "Guess the sign?") {
+  if (activeGame === "Belgini top") {
     return <GuessTheSignGame onBack={() => setActiveGame(null)} />;
   }
 
-  if (activeGame === "Correct answer") {
+  if (activeGame === "To'g'ri javob") {
     return <CorrectAnswerGame onBack={() => setActiveGame(null)} />;
   }
 
-  if (activeGame === "Quick calculation") {
+  if (activeGame === "Tez hisoblash") {
     return <QuickCalculationGame onBack={() => setActiveGame(null)} />;
   }
 
   return (
     <PuzzlePage
-      eyebrow="🧩 Logic Games"
-      title="Math Puzzle"
-      subtitle="Train your brain with quick calculations"
+      eyebrow="🧩 Mantiqiy O'yinlar"
+      title="Matematik Boshqotirma"
+      subtitle="Tez hisob-kitoblar bilan miyangni mashq qil"
       modes={mathModes}
       onPlay={(mode) => setActiveGame(mode)}
     />

@@ -9,35 +9,35 @@ import SquareRootGame from "@/components/puzzle/SquareRootGame";
 
 const memoryModes: PuzzleMode[] = [
   {
-    title: "Mental Arithmetic",
+    title: "Og'zaki hisob",
     score: 0,
     icon: "brain",
-    subtitle: "Remember and calculate",
-    scoreLabel: "Memory Score",
+    subtitle: "Eslab qol va hisobla",
+    scoreLabel: "Xotira bali",
     background: "linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #ef4444 100%)",
   },
   {
-    title: "Pattern Match",
-    subtitle: "Spot card pairs in record time",
+    title: "Juftlikni top",
+    subtitle: "Kartochka juftliklarini rekord vaqtda top",
     icon: "puzzle",
     score: 28,
-    scoreLabel: "Match Score",
+    scoreLabel: "Moslik bali",
     background: "linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #ef4444 100%)",
   },
   {
-    title: "Speed Tiles",
-    subtitle: "Keep track as cards shuffle",
+    title: "Tez plitalar",
+    subtitle: "Kartochkalar aralashtiri lganda kuzatib bor",
     icon: "sparkles",
     score: 8,
-    scoreLabel: "Streak Score",
+    scoreLabel: "Ketma-ketlik bali",
     background: "linear-gradient(130deg, #f59e0b 0%, #f97316 48%, #ef4444 100%)",
   },
   {
-    title: "Square Root",
+    title: "Kvadrat ildiz",
     score: 0,
     icon: "brain",
-    subtitle: "Find the root of the number",
-    scoreLabel: "Root Score",
+    subtitle: "Sonning ildizini top",
+    scoreLabel: "Ildiz bali",
     background: "linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #ef4444 100%)",
   },
 ];
@@ -45,27 +45,27 @@ const memoryModes: PuzzleMode[] = [
 export default function MemoryPuzzlePage() {
   const [activeGame, setActiveGame] = useState<string | null>(null);
 
-  if (activeGame === "Mental Arithmetic") {
+  if (activeGame === "Og'zaki hisob") {
     return <MentalArithmeticGame onBack={() => setActiveGame(null)} />;
   }
 
-  if (activeGame === "Pattern Match") {
+  if (activeGame === "Juftlikni top") {
     return <MathPairsGame onBack={() => setActiveGame(null)} />;
   }
 
-  if (activeGame === "Speed Tiles") {
+  if (activeGame === "Tez plitalar") {
     return <MathGridGame onBack={() => setActiveGame(null)} />;
   }
 
-  if (activeGame === "Square Root") {
+  if (activeGame === "Kvadrat ildiz") {
     return <SquareRootGame onBack={() => setActiveGame(null)} />;
   }
 
   return (
     <PuzzlePage
-      eyebrow="🧠 MEMORY TRAINER"
-      title="Memory Puzzle"
-      subtitle="Sharpen recall with vibrant pattern quests"
+      eyebrow="🧠 XOTIRA TRENERI"
+      title="Xotira Boshqotirmasi"
+      subtitle="Rang-barang namuna topshiriqlari bilan xotirangni charxla"
       modes={memoryModes}
       onPlay={(mode) => setActiveGame(mode)}
       variant="memory"

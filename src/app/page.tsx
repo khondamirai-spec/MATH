@@ -72,7 +72,7 @@ export default function Home() {
             </div>
             
             <span className="z-10 text-2xl font-semibold md:text-3xl">
-              Math Puzzle
+              Matematik Boshqotirma
             </span>
             
             {/* Progress bar */}
@@ -118,7 +118,7 @@ export default function Home() {
             </div>
             
             <span className="z-10 text-2xl font-semibold md:text-3xl">
-              Memory Puzzle
+              Xotira Boshqotirmasi
             </span>
             
             {/* Progress bar */}
@@ -167,7 +167,7 @@ export default function Home() {
             </div>
             
             <span className="z-10 text-2xl font-semibold md:text-3xl">
-              Train Your Brain
+              Miyangni Mashq qil
             </span>
             
             {/* Progress bar */}

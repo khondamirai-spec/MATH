@@ -126,7 +126,7 @@ export default function PuzzlePage({ eyebrow = "🧩 Logic Games", title, subtit
                   {mode.subtitle ? <p className="math-card-subtitle">{mode.subtitle}</p> : null}
                   <div className="math-divider" />
                   <div className="math-score-line">
-                    <span>{mode.scoreLabel ?? "Score"}:</span>
+                    <span>{mode.scoreLabel ?? "Ball"}:</span>
                     <span className="math-score-value">💎 {mode.score}</span>
                   </div>
                 </div>
