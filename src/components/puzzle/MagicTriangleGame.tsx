@@ -351,7 +351,7 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
       </div>
 
       {/* Progress bar */}
-      <div className="h-1 w-full bg-[var(--surface)] rounded-full overflow-hidden mb-4 border border-[var(--foreground-muted)]/20">
+      <div className="h-2 w-full bg-[var(--surface)] rounded-full overflow-hidden mb-4 border-2 border-[var(--foreground-muted)]/40">
         <div 
           className="h-full rounded-full transition-all duration-100 ease-linear"
           style={{ 

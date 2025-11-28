@@ -148,26 +148,26 @@ export default function NumberPyramidGame({ onBack }: NumberPyramidGameProps) {
   };
 
   // Cell dimensions for pyramid blocks
-  const CELL_W = 60;
-  const CELL_H = 50;
-  const GAP = 6;
+  const CELL_W = 50;
+  const CELL_H = 42;
+  const GAP = 5;
 
   return (
     <div 
-      className="relative flex flex-col h-screen text-white p-4 max-w-md mx-auto overflow-hidden font-sans bg-black"
+      className="relative flex flex-col h-screen text-white p-3 max-w-md mx-auto overflow-hidden font-sans bg-black"
     >
       {/* Header */}
-      <div className="relative z-30 flex items-center justify-between mb-2 px-4 py-3">
-        <button onClick={onBack} className="w-10 h-10 rounded-full flex items-center justify-center bg-[#1a1a1a] text-white border border-gray-700">
-           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+      <div className="relative z-30 flex items-center justify-between mb-1.5 px-2 py-2">
+        <button onClick={onBack} className="w-8 h-8 rounded-full flex items-center justify-center bg-[#1a1a1a] text-white border border-gray-700">
+           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
         </button>
-        <div className="flex items-center gap-2 text-xl font-bold">
+        <div className="flex items-center gap-1.5 text-lg font-bold">
           <span>💎</span><span>{score}</span>
         </div>
       </div>
 
       {/* Timer */}
-      <div className="h-1.5 w-full bg-[#1a1a1a] rounded-full overflow-hidden mb-4">
+      <div className="h-1 w-full bg-[#1a1a1a] rounded-full overflow-hidden mb-2">
         <div 
           className="h-full rounded-full transition-all duration-100" 
           style={{ 
@@ -178,18 +178,18 @@ export default function NumberPyramidGame({ onBack }: NumberPyramidGameProps) {
       </div>
 
       {/* Title */}
-      <div className="text-center mb-4">
-        <button onClick={() => setIsTutorialOpen(true)} className="text-xs font-bold text-gray-500 tracking-widest uppercase">
-          RAQAMLI PIRAMIDA <span className="inline-block w-4 h-4 rounded-full border border-gray-500 text-[10px] leading-4">i</span>
+      <div className="text-center mb-2">
+        <button onClick={() => setIsTutorialOpen(true)} className="text-[10px] font-bold text-gray-500 tracking-widest uppercase">
+          RAQAMLI PIRAMIDA <span className="inline-block w-3 h-3 rounded-full border border-gray-500 text-[8px] leading-3">i</span>
         </button>
-        {message && <div className="text-lg font-bold text-[#9333ea] animate-bounce mt-2">{message}</div>}
+        {message && <div className="text-base font-bold text-[#9333ea] animate-bounce mt-1.5">{message}</div>}
       </div>
 
       {/* Pyramid - SVG Based for precise trapezoid shapes */}
       <div className="flex-1 flex items-center justify-center">
         <svg 
           viewBox={`0 0 ${ROWS * (CELL_W + GAP)} ${ROWS * (CELL_H + GAP) + 30}`} 
-          className="w-full max-w-[340px]"
+          className="w-full max-w-[280px]"
           style={{ overflow: 'visible' }}
         >
           {/* Connecting lines - the pyramid outline */}
@@ -273,10 +273,10 @@ export default function NumberPyramidGame({ onBack }: NumberPyramidGameProps) {
                 {/* Cell text */}
                 <text
                   x={x + CELL_W / 2}
-                  y={y + CELL_H / 2 + 5}
+                  y={y + CELL_H / 2 + 4}
                   textAnchor="middle"
                   fill="white"
-                  fontSize={cell.value > 99 ? "12" : "16"}
+                  fontSize={cell.value > 99 ? "10" : "13"}
                   fontWeight="bold"
                   fontFamily="system-ui, sans-serif"
                 >
@@ -289,15 +289,15 @@ export default function NumberPyramidGame({ onBack }: NumberPyramidGameProps) {
       </div>
 
       {/* Keypad */}
-      <div className="grid grid-cols-3 gap-2 max-w-[280px] mx-auto w-full pb-4">
+      <div className="grid grid-cols-3 gap-1.5 max-w-[240px] mx-auto w-full pb-3">
         {[7, 8, 9, 4, 5, 6, 1, 2, 3].map(num => (
           <button
             key={num}
             onClick={() => handleKeypadClick(num.toString())}
-            className="h-16 rounded-2xl text-white text-2xl font-bold transition-all active:scale-95"
+            className="h-12 rounded-xl text-white text-lg font-bold transition-all active:scale-95"
             style={{ 
               background: 'linear-gradient(135deg, #581c87 0%, #9333ea 55%, #e11d48 100%)',
-              boxShadow: '0 4px 0 #3b0764'
+              boxShadow: '0 3px 0 #3b0764'
             }}
           >
             {num}
@@ -305,27 +305,27 @@ export default function NumberPyramidGame({ onBack }: NumberPyramidGameProps) {
         ))}
         <button 
           onClick={() => handleKeypadClick("Done")} 
-          className="h-16 rounded-2xl bg-[#1f1f1f] text-gray-300 text-sm font-bold flex items-center justify-center transition-all active:scale-95"
-          style={{ boxShadow: '0 4px 0 #000' }}
+          className="h-12 rounded-xl bg-[#1f1f1f] text-gray-300 text-xs font-bold flex items-center justify-center transition-all active:scale-95"
+          style={{ boxShadow: '0 3px 0 #000' }}
         >
           Tayyor
         </button>
         <button 
           onClick={() => handleKeypadClick("0")} 
-          className="h-16 rounded-2xl text-white text-2xl font-bold transition-all active:scale-95"
+          className="h-12 rounded-xl text-white text-lg font-bold transition-all active:scale-95"
           style={{ 
             background: 'linear-gradient(135deg, #581c87 0%, #9333ea 55%, #e11d48 100%)',
-            boxShadow: '0 4px 0 #3b0764'
+            boxShadow: '0 3px 0 #3b0764'
           }}
         >
           0
         </button>
         <button 
           onClick={() => handleKeypadClick("Backspace")} 
-          className="h-16 rounded-2xl bg-[#1f1f1f] text-white flex items-center justify-center transition-all active:scale-95"
-          style={{ boxShadow: '0 4px 0 #000' }}
+          className="h-12 rounded-xl bg-[#1f1f1f] text-white flex items-center justify-center transition-all active:scale-95"
+          style={{ boxShadow: '0 3px 0 #000' }}
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z" />
             <line x1="18" y1="9" x2="12" y2="15" />
             <line x1="12" y1="9" x2="18" y2="15" />
