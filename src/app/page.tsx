@@ -1,63 +1,244 @@
-import Image from "next/image";
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState, useRef } from "react";
 
 export default function Home() {
+  const [points] = useState(15);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const hasInitialized = useRef(false);
+
+  // Read theme from localStorage on mount
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const storedTheme = window.localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const initialTheme =
+      storedTheme === "light" || storedTheme === "dark"
+        ? storedTheme
+        : prefersDark
+          ? "dark"
+          : "light";
+
+    setTheme(initialTheme);
+    hasInitialized.current = true;
+  }, []);
+
+  // Apply theme class to document
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+
+    const root = document.documentElement;
+    root.classList.remove("theme-light", "theme-dark");
+    root.classList.add(`theme-${theme}`);
+
+    // Only save to localStorage AFTER initial load (when user actually toggles)
+    if (hasInitialized.current && typeof window !== "undefined") {
+      window.localStorage.setItem("theme", theme);
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div
+      className="flex min-h-screen flex-col transition-colors"
+      style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}
+    >
+      {/* Header */}
+      <header className="flex w-full items-center justify-between px-6 py-5">
+        {/* Trophy Badge */}
+        <div className="trophy-badge flex items-center gap-2 rounded-full px-4 py-2">
+          <span className="text-xl">💎</span>
+          <span className="text-lg font-semibold text-[color:var(--foreground)]">
+            {points}
+          </span>
+        </div>
+
+        {/* Theme Toggle */}
+        <button
+          onClick={toggleTheme}
+          className="theme-toggle flex h-10 w-10 items-center justify-center rounded-full text-[color:var(--foreground-muted)] hover:text-[color:var(--foreground)]"
+          aria-label="Toggle theme"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2" />
+            <path d="M12 20v2" />
+            <path d="m4.93 4.93 1.41 1.41" />
+            <path d="m17.66 17.66 1.41 1.41" />
+            <path d="M2 12h2" />
+            <path d="M20 12h2" />
+            <path d="m6.34 17.66-1.41 1.41" />
+            <path d="m19.07 4.93-1.41 1.41" />
+          </svg>
+        </button>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex flex-1 flex-col items-center px-6 pt-8">
+        {/* Title Section */}
+        <div className="mb-12 text-center">
+          <h1 className="mb-3 text-4xl font-bold tracking-tight text-[color:var(--foreground)] md:text-5xl">
+            Logika AI
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-base text-[color:var(--foreground-muted)] md:text-lg">
+            Miyangni charxla va Logikangni oshir !
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {/* Game Buttons */}
+        <div className="flex w-full max-w-md flex-col gap-5">
+          {/* Math Puzzle Button */}
+          <Link
+            href="/math-puzzle"
+            className="game-btn btn-math-puzzle relative flex h-28 w-full items-center justify-center gap-3 rounded-3xl px-6 text-[color:var(--foreground)]"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            {/* Decorative calculator icon in background */}
+            <div className="btn-decoration left-2 top-1/2 -translate-y-1/2 text-8xl opacity-50">
+              <svg
+                width="120"
+                height="120"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="opacity-80"
+              >
+                <path d="M4 4h16v16H4V4zm2 2v12h12V6H6zm2 2h3v3H8V8zm5 0h3v3h-3V8zm-5 5h3v3H8v-3zm5 0h3v3h-3v-3z" />
+              </svg>
+            </div>
+            
+            {/* Icon */}
+            <div className="z-10 flex h-10 w-10 items-center justify-center rounded-lg border-2 border-white/30">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+              </svg>
+            </div>
+            
+            <span className="z-10 text-2xl font-semibold md:text-3xl">
+              Math Puzzle
+            </span>
+            
+            {/* Progress bar */}
+            <div className="progress-bar"></div>
+          </Link>
+
+          {/* Memory Puzzle Button */}
+          <Link
+            href="/memory-puzzle"
+            className="game-btn btn-memory-puzzle relative flex h-28 w-full items-center justify-center gap-3 rounded-3xl px-6 text-[color:var(--foreground)]"
           >
-            Documentation
-          </a>
+            {/* Decorative clock icon in background */}
+            <div className="btn-decoration left-2 top-1/2 -translate-y-1/2 text-8xl opacity-50">
+              <svg
+                width="120"
+                height="120"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1"
+                className="opacity-80"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
+              </svg>
+            </div>
+            
+            {/* Icon */}
+            <div className="z-10">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
+            
+            <span className="z-10 text-2xl font-semibold md:text-3xl">
+              Memory Puzzle
+            </span>
+            
+            {/* Progress bar */}
+            <div className="progress-bar"></div>
+          </Link>
+
+          {/* Train Your Brain Button */}
+          <Link
+            href="/train-your-brain"
+            className="game-btn btn-train-brain relative flex h-28 w-full items-center justify-center gap-3 rounded-3xl px-6 text-[color:var(--foreground)]"
+          >
+            {/* Decorative brain icon in background */}
+            <div className="btn-decoration left-2 top-1/2 -translate-y-1/2 text-8xl opacity-50">
+              <svg
+                width="120"
+                height="120"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1"
+                className="opacity-80"
+              >
+                <path d="M12 2a4 4 0 0 0-4 4v1a4 4 0 0 0-4 4v2a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4v-2a4 4 0 0 0-4-4V6a4 4 0 0 0-4-4z" />
+              </svg>
+            </div>
+            
+            {/* Icon */}
+            <div className="z-10">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="5" r="3" />
+                <path d="M12 8v4" />
+                <circle cx="12" cy="15" r="3" />
+                <path d="M8 12h8" />
+                <path d="M12 18v3" />
+                <path d="M9 21h6" />
+              </svg>
+            </div>
+            
+            <span className="z-10 text-2xl font-semibold md:text-3xl">
+              Train Your Brain
+            </span>
+            
+            {/* Progress bar */}
+            <div className="progress-bar"></div>
+          </Link>
         </div>
       </main>
     </div>

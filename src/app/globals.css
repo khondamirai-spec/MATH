@@ -1,8 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
+  --background: #050505;
+  --foreground: #f5f5f7;
+  --foreground-muted: rgba(245, 245, 247, 0.7);
+  --surface: rgba(45, 45, 45, 0.9);
+  --button-shadow: rgba(0, 0, 0, 0.3);
+  --button-shadow-hover: rgba(0, 0, 0, 0.4);
+}
+
+.theme-dark {
+  color-scheme: dark;
+  --background: #050505;
+  --foreground: #f5f5f7;
+  --foreground-muted: rgba(245, 245, 247, 0.7);
+  --surface: rgba(45, 45, 45, 0.9);
+  --button-shadow: rgba(0, 0, 0, 0.3);
+  --button-shadow-hover: rgba(0, 0, 0, 0.4);
+}
+
+.theme-light {
+  color-scheme: light;
+  --background: #f6f8fc;
+  --foreground: #0f172a;
+  --foreground-muted: rgba(15, 23, 42, 0.65);
+  --surface: rgba(255, 255, 255, 0.85);
+  --button-shadow: rgba(15, 23, 42, 0.18);
+  --button-shadow-hover: rgba(15, 23, 42, 0.25);
 }
 
 @theme inline {
@@ -12,15 +37,325 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Custom gradient buttons */
+.btn-math-puzzle {
+  background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 50%, #3b82f6 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-math-puzzle::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.btn-math-puzzle::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  right: -20%;
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.btn-memory-puzzle {
+  background: linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #ef4444 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-memory-puzzle::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.btn-train-brain {
+  background: linear-gradient(135deg, #9333ea 0%, #c026d3 50%, #e11d48 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-train-brain::before {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: 5%;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Button hover effects */
+.game-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px var(--button-shadow);
+}
+
+.game-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px var(--button-shadow-hover);
+}
+
+.game-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Decorative background shapes */
+.btn-decoration {
+  position: absolute;
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+/* Progress bar under buttons */
+.progress-bar {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+/* Trophy badge styling */
+.trophy-badge {
+  background: var(--surface);
+  backdrop-filter: blur(10px);
+  border: 1px solid transparent;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--button-shadow) 60%, transparent);
+}
+
+.theme-light .trophy-badge {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(15, 23, 42, 0.12);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover {
+  transform: rotate(15deg);
+}
+
+/* Math puzzle page */
+.math-puzzle-page {
+  min-height: 100vh;
+  padding: 2.5rem 1.5rem 3rem;
+  background: var(--background);
+  color: var(--foreground);
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.math-header {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.math-back-button {
+  display: inline-flex;
+  height: 44px;
+  width: 44px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--foreground-muted);
+  color: var(--foreground);
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px var(--button-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.math-back-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--button-shadow-hover);
+}
+
+.math-header-content {
+  flex: 1;
+}
+
+.math-header-top {
+  margin-bottom: 0.5rem;
+}
+
+.math-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--foreground-muted);
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.15), rgba(59, 130, 246, 0.15));
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(20, 184, 166, 0.3);
+}
+
+.math-title {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: 800;
+  margin: 0;
+  background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 50%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+}
+
+.math-subtitle {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--foreground-muted);
+}
+
+.math-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.math-card {
+  background: var(--math-card-gradient, linear-gradient(135deg, #14b8a6 0%, #06b6d4 55%, #3b82f6 100%));
+  border-radius: 1.5rem; /* rounded-3xl */
+  padding: 0 1.5rem; /* px-6 */
+  box-shadow: 0 4px 15px var(--button-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  position: relative;
+  height: 7rem; /* h-28 same as home button */
+  color: #f8fbff;
+}
+
+.math-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.25), transparent 55%);
+  pointer-events: none;
+}
+
+.math-card-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.math-icon {
+  height: 2.5rem;
+  width: 2.5rem;
+  color: #fff;
+  display: block;
+  flex-shrink: 0;
+}
+
+.math-card-text h2 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.math-card-subtitle {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.math-card-text .math-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.35);
+  margin: 0.35rem 0;
+}
+
+.math-score-line {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+}
+
+.math-score-line span:first-child {
+  opacity: 0.8;
+}
+
+.math-score-value {
+  font-weight: 600;
+}
+
+.math-play-button {
+  height: 2.75rem;
+  width: 2.75rem;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.95);
+  color: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.math-play-button:hover {
+  transform: scale(1.08);
+  background: #fff;
+}
+
+@media (max-width: 640px) {
+  .math-puzzle-page {
+    padding: 1.5rem 1.25rem 2.5rem;
+  }
+
+  .math-card {
+    padding: 0 1rem;
+  }
 }
