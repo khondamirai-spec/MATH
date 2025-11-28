@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import PuzzlePage, { type PuzzleMode } from "@/components/puzzle/PuzzlePage";
+import CalculatorGame from "@/components/puzzle/CalculatorGame";
 
 const mathModes: PuzzleMode[] = [
   {
@@ -38,13 +40,19 @@ const mathModes: PuzzleMode[] = [
 ];
 
 export default function MathPuzzlePage() {
+  const [activeGame, setActiveGame] = useState<string | null>(null);
+
+  if (activeGame === "Calculator") {
+    return <CalculatorGame onBack={() => setActiveGame(null)} />;
+  }
+
   return (
     <PuzzlePage
       eyebrow="🧩 Logic Games"
       title="Math Puzzle"
       subtitle="Train your brain with quick calculations"
       modes={mathModes}
+      onPlay={(mode) => setActiveGame(mode)}
     />
   );
 }
-

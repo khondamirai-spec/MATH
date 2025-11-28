@@ -74,6 +74,7 @@ type PuzzlePageProps = {
   subtitle?: string;
   modes: PuzzleMode[];
   backHref?: string;
+  onPlay?: (mode: string) => void;
 };
 
 type CSSVarStyles = CSSProperties & {
@@ -89,7 +90,7 @@ const Icon = ({ type, className }: { type: ModeIcon; className?: string }) => {
   });
 };
 
-export default function PuzzlePage({ eyebrow = "🧩 Logic Games", title, subtitle, modes, backHref = "/" }: PuzzlePageProps) {
+export default function PuzzlePage({ eyebrow = "🧩 Logic Games", title, subtitle, modes, backHref = "/", onPlay }: PuzzlePageProps) {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -141,7 +142,11 @@ export default function PuzzlePage({ eyebrow = "🧩 Logic Games", title, subtit
                 </div>
               </div>
 
-              <button className="math-play-button" aria-label={`Play ${mode.title}`}>
+              <button 
+                className="math-play-button" 
+                aria-label={`Play ${mode.title}`}
+                onClick={() => onPlay?.(mode.title)}
+              >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M8 5v14l11-7z" />
                 </svg>
