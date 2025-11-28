@@ -43,7 +43,7 @@ export default function GuessTheSignGame({ onBack }: GuessTheSignGameProps) {
   const [question, setQuestion] = useState<{ a: number; b: number; operator: string; result: number } | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [timeLeft, setTimeLeft] = useState(QUESTION_DURATION);
-  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
+  const [isTutorialOpen, setIsTutorialOpen] = useState(true);
 
   const loadNextQuestion = useCallback(() => {
     setQuestion(buildEquation());

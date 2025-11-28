@@ -75,6 +75,7 @@ type PuzzlePageProps = {
   modes: PuzzleMode[];
   backHref?: string;
   onPlay?: (mode: string) => void;
+  variant?: "math" | "memory" | "train";
 };
 
 type CSSVarStyles = CSSProperties & {
@@ -90,9 +91,9 @@ const Icon = ({ type, className }: { type: ModeIcon; className?: string }) => {
   });
 };
 
-export default function PuzzlePage({ eyebrow = "🧩 Logic Games", title, subtitle, modes, backHref = "/", onPlay }: PuzzlePageProps) {
+export default function PuzzlePage({ eyebrow = "🧩 Logic Games", title, subtitle, modes, backHref = "/", onPlay, variant = "math" }: PuzzlePageProps) {
   return (
-    <div className="math-puzzle-page">
+    <div className={`math-puzzle-page ${variant}-puzzle`}>
       <header className="math-header">
         <Link href={backHref} className="math-back-button" aria-label="Back to home">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

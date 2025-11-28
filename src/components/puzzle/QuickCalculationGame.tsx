@@ -42,7 +42,7 @@ export default function QuickCalculationGame({ onBack }: QuickCalculationGamePro
   const [nextQ, setNextQ] = useState<{ expression: string; answer: number } | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
-  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
+  const [isTutorialOpen, setIsTutorialOpen] = useState(true);
 
   // Initialize questions
   useEffect(() => {
@@ -179,21 +179,21 @@ export default function QuickCalculationGame({ onBack }: QuickCalculationGamePro
       </div>
 
       {/* Timer Bar */}
-      <div className="w-full h-2 bg-[var(--foreground-muted)]/20 rounded-full mb-8 overflow-hidden border border-blue-500/30">
+      <div className="w-full h-2 bg-[var(--foreground-muted)]/20 rounded-full mb-4 overflow-hidden border border-blue-500/30">
         <div 
             className="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 shadow-[0_0_12px_rgba(59,130,246,0.65)] transition-[width] duration-100 ease-linear" 
             style={{ width: `${Math.min(100, (timeLeft / INITIAL_TIME) * 100)}%` }}
         ></div>
       </div>
       
-      <div className="text-center text-sm font-mono text-[var(--foreground-muted)] mb-4">
+      <div className="text-center text-sm font-mono text-[var(--foreground-muted)] mb-2">
         {Math.ceil(timeLeft)}s
       </div>
 
       {/* Game Title */}
       <button 
         onClick={() => setIsTutorialOpen(true)}
-        className="flex items-center justify-center gap-2 text-[var(--foreground-muted)] mb-8 hover:text-foreground transition-colors cursor-pointer w-full"
+        className="flex items-center justify-center gap-2 text-[var(--foreground-muted)] mb-4 hover:text-foreground transition-colors cursor-pointer w-full"
       >
         <span className="uppercase tracking-widest text-sm font-semibold">QUICK CALCULATION</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -241,12 +241,12 @@ export default function QuickCalculationGame({ onBack }: QuickCalculationGamePro
             </div>
         </div>
 
-        <div className="text-6xl font-bold mb-8 tracking-wider text-foreground">
+        <div className="text-5xl font-bold mb-4 tracking-wider text-foreground">
             {currentQ ? (
                 <div className="flex items-center gap-4">
                     <span>{currentQ.expression.replace('/', '÷').replace('*', '×')}</span>
                     <span>=</span>
-                    <div className="min-w-[2ch] h-20 bg-[var(--surface)] rounded-2xl flex items-center justify-center text-4xl font-bold text-foreground border border-[var(--foreground-muted)]/20 shadow-sm px-4">
+                    <div className="min-w-[2ch] h-16 bg-[var(--surface)] rounded-2xl flex items-center justify-center text-4xl font-bold text-foreground border border-[var(--foreground-muted)]/20 shadow-sm px-4">
                         {input}
                         <span className="animate-pulse text-blue-500 ml-1">|</span>
                     </div>
@@ -258,12 +258,12 @@ export default function QuickCalculationGame({ onBack }: QuickCalculationGamePro
       </div>
 
       {/* Number Pad Grid */}
-      <div className="grid grid-cols-3 gap-3 pb-6">
+      <div className="grid grid-cols-3 gap-2 pb-4">
         {[7, 8, 9, 4, 5, 6, 1, 2, 3].map((num) => (
             <button
                 key={num}
                 onClick={() => handleNumberClick(num.toString())}
-                className="aspect-square rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white text-3xl font-semibold shadow-lg shadow-blue-900/20 active:scale-95 transition-transform flex items-center justify-center"
+                className="aspect-square rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white text-2xl font-semibold shadow-lg shadow-blue-900/20 active:scale-95 transition-transform flex items-center justify-center"
             >
                 {num}
             </button>
@@ -271,21 +271,21 @@ export default function QuickCalculationGame({ onBack }: QuickCalculationGamePro
         
         <button
             onClick={handleClear}
-            className="aspect-square rounded-2xl bg-[var(--surface)] hover:brightness-110 text-foreground text-xl font-medium active:scale-95 transition-transform flex items-center justify-center shadow-sm border border-[var(--foreground-muted)]/10"
+            className="aspect-square rounded-xl bg-[var(--surface)] hover:brightness-110 text-foreground text-lg font-medium active:scale-95 transition-transform flex items-center justify-center shadow-sm border border-[var(--foreground-muted)]/10"
         >
             Clear
         </button>
         
         <button
             onClick={() => handleNumberClick("0")}
-            className="aspect-square rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white text-3xl font-semibold shadow-lg shadow-blue-900/20 active:scale-95 transition-transform flex items-center justify-center"
+            className="aspect-square rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white text-2xl font-semibold shadow-lg shadow-blue-900/20 active:scale-95 transition-transform flex items-center justify-center"
         >
             0
         </button>
         
         <button
             onClick={handleDelete}
-            className="aspect-square rounded-2xl bg-[var(--surface)] hover:brightness-110 text-foreground text-2xl font-medium active:scale-95 transition-transform flex items-center justify-center shadow-sm border border-[var(--foreground-muted)]/10"
+            className="aspect-square rounded-xl bg-[var(--surface)] hover:brightness-110 text-foreground text-xl font-medium active:scale-95 transition-transform flex items-center justify-center shadow-sm border border-[var(--foreground-muted)]/10"
         >
             ⌫
         </button>

@@ -42,7 +42,7 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
   const [input, setInput] = useState("");
   const [isPaused, setIsPaused] = useState(false);
   const [timeLeft, setTimeLeft] = useState(QUESTION_DURATION);
-  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
+  const [isTutorialOpen, setIsTutorialOpen] = useState(true);
 
   const loadNextQuestion = useCallback(() => {
     const { expression, solution } = buildEquation();
@@ -125,7 +125,7 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
       </div>
 
       {/* Progress Bar */}
-      <div className="w-full h-2 bg-[var(--foreground-muted)]/20 rounded-full mb-8 overflow-hidden border border-blue-500/30">
+      <div className="w-full h-2 bg-[var(--foreground-muted)]/20 rounded-full mb-4 overflow-hidden border border-blue-500/30">
         <div 
             className="h-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500 shadow-[0_0_12px_rgba(59,130,246,0.65)] transition-[width] duration-75 ease-linear" 
             style={{ width: `${Math.max(0, Math.min(100, (timeLeft / QUESTION_DURATION) * 100))}%` }}
@@ -135,7 +135,7 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
       {/* Game Title - Clickable for Tutorial */}
       <button 
         onClick={() => setIsTutorialOpen(true)}
-        className="flex items-center justify-center gap-2 text-[var(--foreground-muted)] mb-8 hover:text-foreground transition-colors cursor-pointer w-full"
+        className="flex items-center justify-center gap-2 text-[var(--foreground-muted)] mb-4 hover:text-foreground transition-colors cursor-pointer w-full"
       >
         <span className="uppercase tracking-widest text-sm font-semibold">CALCULATOR</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -158,7 +158,7 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
             {/* Handle */}
             <div className="w-12 h-1 bg-[var(--foreground-muted)] rounded-full mx-auto mb-6 opacity-30" />
             
-            <h2 className="text-xl font-bold text-center mb-6 text-foreground">Quick Calculation</h2>
+            <h2 className="text-xl font-bold text-center mb-6 text-foreground">Calculator</h2>
             
             {/* Mini Game Preview */}
             <div className="bg-background rounded-2xl p-6 mb-6 relative overflow-hidden border border-[var(--foreground-muted)]/20 mx-4 shadow-inner">
@@ -178,7 +178,7 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
                     <div className="h-full w-3/4 bg-blue-500"></div>
                 </div>
                 
-                <div className="text-center mb-2 text-[var(--foreground-muted)] text-[10px] tracking-widest uppercase">Quick Calculation</div>
+                <div className="text-center mb-2 text-[var(--foreground-muted)] text-[10px] tracking-widest uppercase">Calculator</div>
                 <div className="text-center text-2xl font-bold mb-2 text-foreground flex justify-center items-center gap-3">
                     6 / 3 = <div className="w-10 h-10 bg-[var(--surface)] rounded-lg border border-[var(--foreground-muted)]/20"></div>
                 </div>
@@ -211,23 +211,23 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
       </div>
 
       {/* Problem Display */}
-      <div className="flex-1 flex flex-col items-center justify-center mb-8">
-        <div className="text-6xl font-bold mb-8 tracking-wider text-foreground">{equation.replace('/', '÷').replace('*', '×')}</div>
+      <div className="flex-1 flex flex-col items-center justify-center mb-4">
+        <div className="text-5xl font-bold mb-6 tracking-wider text-foreground">{equation.replace('/', '÷').replace('*', '×')}</div>
         
         {/* Answer Input Field */}
-        <div className="w-full h-20 bg-[var(--surface)] rounded-2xl flex items-center justify-center text-4xl font-bold text-foreground border border-[var(--foreground-muted)]/20 shadow-sm">
+        <div className="w-full h-16 bg-[var(--surface)] rounded-2xl flex items-center justify-center text-4xl font-bold text-foreground border border-[var(--foreground-muted)]/20 shadow-sm">
             {input}
             <span className="animate-pulse text-blue-500">|</span>
         </div>
       </div>
 
       {/* Number Pad Grid */}
-      <div className="grid grid-cols-3 gap-3 pb-6">
+      <div className="grid grid-cols-3 gap-2 pb-4">
         {[7, 8, 9, 4, 5, 6, 1, 2, 3].map((num) => (
             <button
                 key={num}
                 onClick={() => handleNumberClick(num.toString())}
-                className="aspect-square rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white text-3xl font-semibold shadow-lg shadow-blue-900/20 active:scale-95 transition-transform flex items-center justify-center"
+                className="aspect-square rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white text-2xl font-semibold shadow-lg shadow-blue-900/20 active:scale-95 transition-transform flex items-center justify-center"
             >
                 {num}
             </button>
@@ -236,21 +236,21 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
         {/* Bottom Row */}
         <button
             onClick={handleClear}
-            className="aspect-square rounded-2xl bg-[var(--surface)] hover:brightness-110 text-foreground text-xl font-medium active:scale-95 transition-transform flex items-center justify-center shadow-sm border border-[var(--foreground-muted)]/10"
+            className="aspect-square rounded-xl bg-[var(--surface)] hover:brightness-110 text-foreground text-lg font-medium active:scale-95 transition-transform flex items-center justify-center shadow-sm border border-[var(--foreground-muted)]/10"
         >
             Clear
         </button>
         
         <button
             onClick={() => handleNumberClick("0")}
-            className="aspect-square rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white text-3xl font-semibold shadow-lg shadow-blue-900/20 active:scale-95 transition-transform flex items-center justify-center"
+            className="aspect-square rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white text-2xl font-semibold shadow-lg shadow-blue-900/20 active:scale-95 transition-transform flex items-center justify-center"
         >
             0
         </button>
         
         <button
             onClick={handleDelete}
-            className="aspect-square rounded-2xl bg-[var(--surface)] hover:brightness-110 text-foreground text-2xl font-medium active:scale-95 transition-transform flex items-center justify-center shadow-sm border border-[var(--foreground-muted)]/10"
+            className="aspect-square rounded-xl bg-[var(--surface)] hover:brightness-110 text-foreground text-xl font-medium active:scale-95 transition-transform flex items-center justify-center shadow-sm border border-[var(--foreground-muted)]/10"
         >
             ⌫
         </button>

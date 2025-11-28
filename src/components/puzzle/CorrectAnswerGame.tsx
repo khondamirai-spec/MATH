@@ -83,7 +83,7 @@ export default function CorrectAnswerGame({ onBack }: CorrectAnswerGameProps) {
   const [timeLeft, setTimeLeft] = useState(QUESTION_DURATION);
   const [question, setQuestion] = useState<Question | null>(null);
   const [isPaused, setIsPaused] = useState(false);
-  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
+  const [isTutorialOpen, setIsTutorialOpen] = useState(true);
 
   const loadNextQuestion = useCallback(() => {
     setQuestion(buildQuestion());
