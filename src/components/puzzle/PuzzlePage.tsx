@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CSSProperties, ReactElement, cloneElement, useEffect } from "react";
+import { CSSProperties, ReactElement, cloneElement } from "react";
 
 const icons = {
   hourglass: (
@@ -91,17 +91,6 @@ const Icon = ({ type, className }: { type: ModeIcon; className?: string }) => {
 };
 
 export default function PuzzlePage({ eyebrow = "🧩 Logic Games", title, subtitle, modes, backHref = "/", onPlay }: PuzzlePageProps) {
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const storedTheme = window.localStorage.getItem("theme");
-    if (storedTheme === "light" || storedTheme === "dark") {
-      const root = document.documentElement;
-      root.classList.remove("theme-light", "theme-dark");
-      root.classList.add(`theme-${storedTheme}`);
-    }
-  }, []);
-
   return (
     <div className="math-puzzle-page">
       <header className="math-header">

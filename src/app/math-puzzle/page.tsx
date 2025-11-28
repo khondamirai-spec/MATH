@@ -3,6 +3,9 @@
 import { useState } from "react";
 import PuzzlePage, { type PuzzleMode } from "@/components/puzzle/PuzzlePage";
 import CalculatorGame from "@/components/puzzle/CalculatorGame";
+import GuessTheSignGame from "@/components/puzzle/GuessTheSignGame";
+import CorrectAnswerGame from "@/components/puzzle/CorrectAnswerGame";
+import QuickCalculationGame from "@/components/puzzle/QuickCalculationGame";
 
 const mathModes: PuzzleMode[] = [
   {
@@ -44,6 +47,18 @@ export default function MathPuzzlePage() {
 
   if (activeGame === "Calculator") {
     return <CalculatorGame onBack={() => setActiveGame(null)} />;
+  }
+
+  if (activeGame === "Guess the sign?") {
+    return <GuessTheSignGame onBack={() => setActiveGame(null)} />;
+  }
+
+  if (activeGame === "Correct answer") {
+    return <CorrectAnswerGame onBack={() => setActiveGame(null)} />;
+  }
+
+  if (activeGame === "Quick calculation") {
+    return <QuickCalculationGame onBack={() => setActiveGame(null)} />;
   }
 
   return (

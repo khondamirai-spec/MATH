@@ -1,51 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
 
 export default function Home() {
   const [points] = useState(15);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
-  const hasInitialized = useRef(false);
-
-  // Read theme from localStorage on mount
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const storedTheme = window.localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initialTheme =
-      storedTheme === "light" || storedTheme === "dark"
-        ? storedTheme
-        : prefersDark
-          ? "dark"
-          : "light";
-
-    setTheme(initialTheme);
-    hasInitialized.current = true;
-  }, []);
-
-  // Apply theme class to document
-  useEffect(() => {
-    if (typeof document === "undefined") return;
-
-    const root = document.documentElement;
-    root.classList.remove("theme-light", "theme-dark");
-    root.classList.add(`theme-${theme}`);
-
-    // Only save to localStorage AFTER initial load (when user actually toggles)
-    if (hasInitialized.current && typeof window !== "undefined") {
-      window.localStorage.setItem("theme", theme);
-    }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
 
   return (
     <div
-      className="flex min-h-screen flex-col transition-colors"
+      className="flex min-h-screen flex-col"
       style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}
     >
       {/* Header */}
@@ -57,35 +20,6 @@ export default function Home() {
             {points}
           </span>
         </div>
-
-        {/* Theme Toggle */}
-        <button
-          onClick={toggleTheme}
-          className="theme-toggle flex h-10 w-10 items-center justify-center rounded-full text-[color:var(--foreground-muted)] hover:text-[color:var(--foreground)]"
-          aria-label="Toggle theme"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="12" cy="12" r="4" />
-            <path d="M12 2v2" />
-            <path d="M12 20v2" />
-            <path d="m4.93 4.93 1.41 1.41" />
-            <path d="m17.66 17.66 1.41 1.41" />
-            <path d="M2 12h2" />
-            <path d="M20 12h2" />
-            <path d="m6.34 17.66-1.41 1.41" />
-            <path d="m19.07 4.93-1.41 1.41" />
-          </svg>
-        </button>
       </header>
 
       {/* Main Content */}
