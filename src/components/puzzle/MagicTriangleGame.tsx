@@ -211,7 +211,7 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
        // Update available numbers: return oldVal, remove correctValue
        setAvailableNumbers(prev => {
          let next = [...prev];
-         if (oldVal !== null) next.push(oldVal);
+         if (oldVal !== null && oldVal !== undefined) next.push(oldVal);
          // Filter out ONLY the correctValue instance we just placed
          // But since numbers are unique 1-6, simple filter is fine
          next = next.filter(n => n !== correctValue);
