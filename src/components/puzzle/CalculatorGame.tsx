@@ -1,8 +1,46 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 const QUESTION_DURATION = 5; // seconds per question
+
+// Create a "tin tin" bell sound using Web Audio API
+const playTinTinSound = () => {
+  try {
+    const audioContext = new (window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    
+    // First "tin" - higher pitch
+    const playTin = (startTime: number, frequency: number) => {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.setValueAtTime(frequency, startTime);
+      oscillator.type = 'sine';
+      
+      // Bell-like envelope
+      gainNode.gain.setValueAtTime(0, startTime);
+      gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.01);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+      
+      oscillator.start(startTime);
+      oscillator.stop(startTime + 0.3);
+    };
+    
+    const now = audioContext.currentTime;
+    playTin(now, 880);        // First "tin" - A5
+    playTin(now + 0.15, 1108.73); // Second "tin" - C#6 (higher)
+    
+    // Clean up audio context after sounds finish
+    setTimeout(() => {
+      audioContext.close();
+    }, 500);
+  } catch {
+    // Audio not supported, fail silently
+  }
+};
 const PROGRESS_INTERVAL = 100; // ms
 const PROGRESS_DECREMENT = PROGRESS_INTERVAL / 1000;
 
@@ -43,13 +81,21 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
   const [isPaused, setIsPaused] = useState(false);
   const [timeLeft, setTimeLeft] = useState(QUESTION_DURATION);
   const [isTutorialOpen, setIsTutorialOpen] = useState(true);
+  const isFirstLoad = useRef(true);
+  const hasAnswered = useRef(false);
 
-  const loadNextQuestion = useCallback(() => {
+  const loadNextQuestion = useCallback((playSound: boolean = true) => {
     const { expression, solution } = buildEquation();
     setEquation(expression);
     setAnswer(solution);
     setInput("");
     setTimeLeft(QUESTION_DURATION);
+    hasAnswered.current = false;
+    
+    // Play "tin tin" sound for each new question
+    if (playSound) {
+      playTinTinSound();
+    }
   }, []);
 
   useEffect(() => {
@@ -69,7 +115,10 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
   }, [isPaused, isTutorialOpen]);
 
   useEffect(() => {
-    if (!isPaused && timeLeft === 0) {
+    if (!isPaused && timeLeft === 0 && !hasAnswered.current) {
+      // Time ran out - subtract 1.0 gems for incorrect answer
+      hasAnswered.current = true;
+      setScore((s) => Math.max(0, s - 1.0));
       loadNextQuestion();
     }
   }, [isPaused, timeLeft, loadNextQuestion]);
@@ -97,9 +146,15 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
   // Usually in these games, once the correct answer is typed, it moves to next.
   // "9 / 3" is 3. If user types 3, we should probably accept it.
   useEffect(() => {
-    if (input && parseInt(input, 10) === answer) {
-        // Correct answer
-        setScore((s) => s + 1);
+    if (!input || hasAnswered.current) return;
+    
+    const inputNum = parseInt(input, 10);
+    if (isNaN(inputNum)) return;
+    
+    if (inputNum === answer) {
+        // Correct answer - add 1.0 gems
+        hasAnswered.current = true;
+        setScore((s) => s + 1.0);
         loadNextQuestion();
     }
   }, [input, answer, loadNextQuestion]);
@@ -202,8 +257,15 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
             </div>
 
             <button 
-                onClick={() => setIsTutorialOpen(false)}
-                className="w-full py-4 rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold tracking-wide shadow-lg shadow-orange-900/20 active:scale-95 transition-transform uppercase text-sm"
+                onClick={() => {
+                  setIsTutorialOpen(false);
+                  // Play sound when starting the game
+                  if (isFirstLoad.current) {
+                    isFirstLoad.current = false;
+                    playTinTinSound();
+                  }
+                }}
+                className="w-full py-4 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold tracking-wide shadow-lg shadow-blue-900/20 active:scale-95 transition-transform uppercase text-sm"
             >
                 Tushundim!
             </button>

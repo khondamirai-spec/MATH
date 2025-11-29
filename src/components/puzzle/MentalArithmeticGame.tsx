@@ -2,6 +2,41 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 
+// Create a "tin tin" bell sound using Web Audio API
+const playTinTinSound = () => {
+  try {
+    const audioContext = new (window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    
+    const playTin = (startTime: number, frequency: number) => {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.setValueAtTime(frequency, startTime);
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0, startTime);
+      gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.01);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+      
+      oscillator.start(startTime);
+      oscillator.stop(startTime + 0.3);
+    };
+    
+    const now = audioContext.currentTime;
+    playTin(now, 880);
+    playTin(now + 0.15, 1108.73);
+    
+    setTimeout(() => {
+      audioContext.close();
+    }, 500);
+  } catch {
+    // Audio not supported, fail silently
+  }
+};
+
 const DISPLAY_DURATION = 2000; // 2 seconds per number
 const INITIAL_SEQUENCE_LENGTH = 3;
 
@@ -89,13 +124,17 @@ export default function MentalArithmeticGame({ onBack }: MentalArithmeticGamePro
   
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const startGame = useCallback(() => {
+  const startGame = useCallback((playSound: boolean = true) => {
     const { sequence: newSeq, answer } = generateSequence(INITIAL_SEQUENCE_LENGTH + Math.floor(score / 5)); // Increase difficulty every 5 points
     setSequence(newSeq);
     setTargetAnswer(answer);
     setCurrentStepIndex(0);
     setGameState('ready');
     setUserInput("");
+    
+    if (playSound) {
+      playTinTinSound();
+    }
     
     // Short delay before showing first number
     setTimeout(() => {
@@ -246,7 +285,7 @@ export default function MentalArithmeticGame({ onBack }: MentalArithmeticGamePro
 
                 <button 
                     onClick={startGame}
-                    className="w-full py-4 rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold tracking-wide shadow-lg active:scale-95 transition-transform uppercase text-sm"
+                    className="w-full py-4 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold tracking-wide shadow-lg shadow-blue-900/20 active:scale-95 transition-transform uppercase text-sm"
                 >
                     Tushundim!
                 </button>

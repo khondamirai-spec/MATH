@@ -1,6 +1,41 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+
+// Create a "tin tin" bell sound using Web Audio API
+const playTinTinSound = () => {
+  try {
+    const audioContext = new (window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    
+    const playTin = (startTime: number, frequency: number) => {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.setValueAtTime(frequency, startTime);
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0, startTime);
+      gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.01);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+      
+      oscillator.start(startTime);
+      oscillator.stop(startTime + 0.3);
+    };
+    
+    const now = audioContext.currentTime;
+    playTin(now, 880);
+    playTin(now + 0.15, 1108.73);
+    
+    setTimeout(() => {
+      audioContext.close();
+    }, 500);
+  } catch {
+    // Audio not supported, fail silently
+  }
+};
 
 const INITIAL_TIME = 60;
 const GRID_SIZE = 6; // 6x6 grid
@@ -25,6 +60,7 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
   const [isTutorialOpen, setIsTutorialOpen] = useState(true);
   const [isGameOver, setIsGameOver] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const isFirstLoad = useRef(true);
 
   // Initialize grid
   const generateGrid = useCallback(() => {
@@ -130,6 +166,7 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
         setCurrentSum(0);
         setTarget(generateTarget(nextGrid));
         setMessage(null);
+        playTinTinSound();
       }, 200);
     } else if (newSum > target) {
       // Wrong! Over the target
@@ -276,8 +313,14 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
             </div>
 
             <button 
-                onClick={() => setIsTutorialOpen(false)}
-                className="w-full py-4 rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold tracking-wide shadow-lg shadow-orange-900/20 active:scale-95 transition-transform uppercase text-sm"
+                onClick={() => {
+                  setIsTutorialOpen(false);
+                  if (isFirstLoad.current) {
+                    isFirstLoad.current = false;
+                    playTinTinSound();
+                  }
+                }}
+                className="w-full py-4 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold tracking-wide shadow-lg shadow-blue-900/20 active:scale-95 transition-transform uppercase text-sm"
             >
                 Tushundim!
             </button>
