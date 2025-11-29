@@ -136,27 +136,18 @@ export async function initializeUserSession(
     userId = getUserIdFromStorage();
   }
 
-  // If still no user_id
+  // If still no user_id, GENERATE ONE (Guest Mode) instead of redirecting
   if (!userId) {
-    // In development, use a mock user ID
-    if (isDevelopment()) {
-      userId = 'dev-user-00000000-0000-0000-0000-000000000000';
-      console.log('🔧 Development mode: Using mock user ID');
-    } else {
-      redirectToMainPlatform('no_user');
-      return null;
-    }
+    // Generate a random UUID for the new user
+    userId = crypto.randomUUID();
+    console.log('✨ New visitor: Generated guest User ID:', userId);
   }
 
-  // Validate UUID format (skip for dev mock ID)
-  if (!userId.startsWith('dev-user-') && !isValidUUID(userId)) {
-    if (isDevelopment()) {
-      userId = 'dev-user-00000000-0000-0000-0000-000000000000';
-      console.log('🔧 Development mode: Invalid UUID, using mock user ID');
-    } else {
-      redirectToMainPlatform('no_user');
-      return null;
-    }
+  // Validate UUID format
+  if (!isValidUUID(userId)) {
+    // If the ID in storage/URL is invalid, generate a new one
+    console.warn('⚠️ Invalid UUID found, generating new one');
+    userId = crypto.randomUUID();
   }
 
   // Store in localStorage for future visits
