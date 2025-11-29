@@ -69,6 +69,13 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
   const [level, setLevel] = useState(1);
   const [isWin, setIsWin] = useState(false);
 
+  const formatTime = (seconds: number) => {
+    const safeSeconds = Math.max(0, Math.floor(seconds));
+    const minutes = Math.floor(safeSeconds / 60);
+    const remainingSeconds = safeSeconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+  };
+
   // Generate all valid solutions for the current target
   const generateSolutions = useCallback((target: number) => {
     const corners = CORNER_SETS[target];
@@ -344,21 +351,14 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
           </svg>
         </button>
 
+        <div className="absolute left-1/2 -translate-x-1/2 text-xl font-bold text-[var(--foreground-muted)]">
+          {formatTime(timeLeft)}
+        </div>
+
         <div className="flex items-center gap-2 text-xl font-bold text-foreground">
           <span>💎</span>
           <span>{score}</span>
         </div>
-      </div>
-
-      {/* Progress bar */}
-      <div className="h-6 w-full bg-[var(--surface)] rounded-full overflow-hidden mb-4 border-2 border-[var(--foreground-muted)]/40">
-        <div 
-          className="h-full rounded-full transition-all duration-100 ease-linear"
-          style={{ 
-            width: `${(timeLeft / 120) * 100}%`,
-            background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 55%, #c026d3 100%)'
-          }}
-        />
       </div>
 
       {/* Target Display */}
