@@ -184,7 +184,7 @@ export default function PicturePuzzleGame({ onBack }: PicturePuzzleGameProps) {
       </div>
 
       {/* Progress Bar / Timer */}
-      <div className="w-full h-2 bg-[var(--foreground-muted)]/30 relative overflow-hidden rounded-full border border-[var(--foreground-muted)]/40">
+      <div className="w-full h-2.5 bg-[var(--foreground-muted)]/30 relative overflow-hidden rounded-full border border-[var(--foreground-muted)]/40">
         <div 
           className="h-full transition-all duration-1000 ease-linear shadow-[0_0_10px_rgba(139,92,246,0.5)]"
           style={{ 

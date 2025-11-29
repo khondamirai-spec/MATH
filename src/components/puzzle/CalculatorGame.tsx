@@ -222,12 +222,12 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
       </div>
 
       {/* Number Pad Grid */}
-      <div className="grid grid-cols-3 gap-2 pb-4">
+      <div className="grid grid-cols-3 gap-1 pb-2">
         {[7, 8, 9, 4, 5, 6, 1, 2, 3].map((num) => (
             <button
                 key={num}
                 onClick={() => handleNumberClick(num.toString())}
-                className="aspect-square rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white text-2xl font-semibold shadow-lg shadow-blue-900/20 active:scale-95 transition-transform flex items-center justify-center"
+                className="h-20 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white text-2xl font-semibold shadow-md shadow-blue-900/20 active:scale-95 transition-transform flex items-center justify-center"
             >
                 {num}
             </button>
@@ -236,21 +236,21 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
         {/* Bottom Row */}
         <button
             onClick={handleClear}
-            className="aspect-square rounded-xl bg-[var(--surface)] hover:brightness-110 text-foreground text-lg font-medium active:scale-95 transition-transform flex items-center justify-center shadow-sm border border-[var(--foreground-muted)]/10"
+            className="h-20 rounded-lg bg-[var(--surface)] hover:brightness-110 text-foreground text-lg font-medium active:scale-95 transition-transform flex items-center justify-center shadow-sm border border-[var(--foreground-muted)]/10"
         >
             Tozalash
         </button>
         
         <button
             onClick={() => handleNumberClick("0")}
-            className="aspect-square rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white text-2xl font-semibold shadow-lg shadow-blue-900/20 active:scale-95 transition-transform flex items-center justify-center"
+            className="h-20 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white text-2xl font-semibold shadow-md shadow-blue-900/20 active:scale-95 transition-transform flex items-center justify-center"
         >
             0
         </button>
         
         <button
             onClick={handleDelete}
-            className="aspect-square rounded-xl bg-[var(--surface)] hover:brightness-110 text-foreground text-xl font-medium active:scale-95 transition-transform flex items-center justify-center shadow-sm border border-[var(--foreground-muted)]/10"
+            className="h-20 rounded-lg bg-[var(--surface)] hover:brightness-110 text-foreground text-xl font-medium active:scale-95 transition-transform flex items-center justify-center shadow-sm border border-[var(--foreground-muted)]/10"
         >
             ⌫
         </button>

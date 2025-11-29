@@ -275,12 +275,12 @@ export default function MentalArithmeticGame({ onBack }: MentalArithmeticGamePro
       </div>
 
       {/* Numpad */}
-      <div className={`grid grid-cols-3 gap-2 pb-4 transition-opacity duration-300 ${gameState === 'input' ? 'opacity-100 pointer-events-auto' : 'opacity-50 pointer-events-none'}`}>
+      <div className={`grid grid-cols-3 gap-1 pb-2 transition-opacity duration-300 ${gameState === 'input' ? 'opacity-100 pointer-events-auto' : 'opacity-50 pointer-events-none'}`}>
         {[7, 8, 9, 4, 5, 6, 1, 2, 3].map((num) => (
             <button
                 key={num}
                 onClick={() => handleNumberClick(num.toString())}
-                className="aspect-square rounded-xl bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] hover:opacity-90 text-white text-2xl font-semibold shadow-lg shadow-orange-900/20 active:scale-95 transition-transform flex items-center justify-center"
+                className="h-20 rounded-lg bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] hover:opacity-90 text-white text-2xl font-semibold shadow-md shadow-orange-900/20 active:scale-95 transition-transform flex items-center justify-center"
             >
                 {num}
             </button>
@@ -288,21 +288,21 @@ export default function MentalArithmeticGame({ onBack }: MentalArithmeticGamePro
         
         <button
             onClick={handleClear}
-            className="aspect-square rounded-xl bg-[var(--surface)] text-foreground text-lg font-medium active:scale-95 transition-transform flex items-center justify-center shadow-sm border border-[var(--foreground-muted)]/10"
+            className="h-20 rounded-lg bg-[var(--surface)] text-foreground text-lg font-medium active:scale-95 transition-transform flex items-center justify-center shadow-sm border border-[var(--foreground-muted)]/10"
         >
             Tozalash
         </button>
         
         <button
             onClick={() => handleNumberClick("0")}
-            className="aspect-square rounded-xl bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] hover:opacity-90 text-white text-2xl font-semibold shadow-lg shadow-orange-900/20 active:scale-95 transition-transform flex items-center justify-center"
+            className="h-20 rounded-lg bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] hover:opacity-90 text-white text-2xl font-semibold shadow-md shadow-orange-900/20 active:scale-95 transition-transform flex items-center justify-center"
         >
             0
         </button>
         
         <button
             onClick={checkAnswer}
-            className="aspect-square rounded-xl bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] hover:opacity-90 text-white text-xl font-medium active:scale-95 transition-transform flex items-center justify-center shadow-lg shadow-orange-900/20"
+            className="h-20 rounded-lg bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] hover:opacity-90 text-white text-xl font-medium active:scale-95 transition-transform flex items-center justify-center shadow-md shadow-orange-900/20"
         >
             ✓
         </button>
