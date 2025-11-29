@@ -284,7 +284,7 @@ export default function MentalArithmeticGame({ onBack }: MentalArithmeticGamePro
                 </div>
 
                 <button 
-                    onClick={startGame}
+                    onClick={() => startGame()}
                     className="w-full py-4 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold tracking-wide shadow-lg shadow-blue-900/20 active:scale-95 transition-transform uppercase text-sm"
                 >
                     Tushundim!
