@@ -220,7 +220,7 @@ export default function MathPairsGame({ onBack }: MathPairsGameProps) {
       </div>
 
       {/* Timer Bar */}
-      <div className="w-full h-2 bg-[var(--surface)] rounded-full mb-4 overflow-hidden border border-[var(--foreground-muted)]/20">
+      <div className="w-full h-3 bg-[var(--surface)] rounded-full mb-4 overflow-hidden border border-[var(--foreground-muted)]/20">
         <div 
             className="h-full bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 shadow-[0_0_12px_rgba(245,158,11,0.5)] transition-[width] duration-100 ease-linear" 
             style={{ width: `${Math.min(100, (timeLeft / INITIAL_TIME) * 100)}%` }}
@@ -327,7 +327,7 @@ export default function MathPairsGame({ onBack }: MathPairsGameProps) {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-3 gap-3 px-2">
+      <div className="grid grid-cols-3 gap-2 px-4">
         {cards.map((card) => {
           const isHidden = card.state === "hidden";
           const isMatched = card.state === "matched";
@@ -347,7 +347,7 @@ export default function MathPairsGame({ onBack }: MathPairsGameProps) {
               }`}
             >
               {isHidden ? (
-                <span className="text-4xl opacity-50 select-none">?</span>
+                <span className="text-3xl opacity-50 select-none">?</span>
               ) : (
                 <span className="animate-in fade-in zoom-in-95 duration-300">
                   {card.content.replace('*', '×').replace('/', '÷')}

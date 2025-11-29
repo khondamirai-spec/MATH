@@ -339,13 +339,13 @@ export default function PicturePuzzleGame({ onBack }: PicturePuzzleGameProps) {
 
       {/* Numeric Keypad */}
       <div className="px-4 pb-6">
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2">
           {[7, 8, 9, 4, 5, 6, 1, 2, 3].map((num) => (
             <button
               key={num}
               onClick={() => handleNumberClick(num.toString())}
               disabled={feedback === "correct"}
-              className="h-20 rounded-2xl text-white text-3xl font-semibold shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
+              className="h-14 rounded-2xl text-white text-xl font-semibold shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
               style={{ background: 'linear-gradient(135deg, #5b21b6 0%, #7c3aed 55%, #db2777 100%)' }}
             >
               {num}
@@ -356,14 +356,14 @@ export default function PicturePuzzleGame({ onBack }: PicturePuzzleGameProps) {
           <button
             onClick={() => handleNumberClick("clear")}
             disabled={feedback === "correct"}
-            className="h-20 rounded-2xl bg-[#2a2a2a] text-white text-base font-medium hover:bg-[#3a3a3a] active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+            className="h-14 rounded-2xl bg-[#2a2a2a] text-white text-sm font-medium hover:bg-[#3a3a3a] active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Tozalash
           </button>
           <button
             onClick={() => handleNumberClick("0")}
             disabled={feedback === "correct"}
-            className="h-20 rounded-2xl text-white text-3xl font-semibold shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
+            className="h-14 rounded-2xl text-white text-xl font-semibold shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
             style={{ background: 'linear-gradient(135deg, #5b21b6 0%, #7c3aed 55%, #db2777 100%)' }}
           >
             0
@@ -371,9 +371,9 @@ export default function PicturePuzzleGame({ onBack }: PicturePuzzleGameProps) {
           <button
             onClick={() => handleNumberClick("backspace")}
             disabled={feedback === "correct"}
-            className="h-20 rounded-2xl bg-[#2a2a2a] text-white hover:bg-[#3a3a3a] active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="h-14 rounded-2xl bg-[#2a2a2a] text-white hover:bg-[#3a3a3a] active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>

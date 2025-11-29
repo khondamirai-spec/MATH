@@ -351,7 +351,7 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
       </div>
 
       {/* Progress bar */}
-      <div className="h-2 w-full bg-[var(--surface)] rounded-full overflow-hidden mb-4 border-2 border-[var(--foreground-muted)]/40">
+      <div className="h-3 w-full bg-[var(--surface)] rounded-full overflow-hidden mb-4 border-2 border-[var(--foreground-muted)]/40">
         <div 
           className="h-full rounded-full transition-all duration-100 ease-linear"
           style={{ 
@@ -479,39 +479,6 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
             <span className="text-[#c026d3] font-bold">{selectedNumber}</span> ni joylashtirish uchun doirani bosing
           </p>
         )}
-        
-        {selectedNumber === null && availableNumbers.length > 0 && (
-          <p className="text-center text-[var(--foreground-muted)] text-sm mt-4">
-            Joylashtirish uchun raqam tanlang
-          </p>
-        )}
-
-        <div className="flex justify-center gap-4 mt-6 pb-4">
-          <button
-            onClick={handleResetBoard}
-            className="flex items-center gap-2 px-6 py-3 bg-[var(--surface)] text-[var(--foreground-muted)] font-bold rounded-full hover:bg-[var(--surface)]/80 hover:text-foreground transition-all border border-[var(--foreground-muted)]/20"
-            aria-label="Qayta o'rnatish"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-              <path d="M3 3v5h5" />
-            </svg>
-            Qayta o'rnatish
-          </button>
-          
-          <button
-            onClick={handleHint}
-            className="flex items-center gap-2 px-6 py-3 bg-[#6d28d9]/10 text-[#6d28d9] font-bold rounded-full hover:bg-[#6d28d9]/20 transition-all border border-[#6d28d9]/20"
-            aria-label="Maslahat olish"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
-              <path d="M9 18h6" />
-              <path d="M10 22h4" />
-            </svg>
-            Maslahat
-          </button>
-        </div>
       </div>
 
       {/* Tutorial Modal */}
