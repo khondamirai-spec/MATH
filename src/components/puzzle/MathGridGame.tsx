@@ -195,7 +195,7 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
                 {message}
             </div>
         )}
-         <div className="h-1 w-full max-w-[200px] bg-[var(--surface)] rounded-full mt-4 overflow-hidden border border-[var(--foreground-muted)]/20">
+         <div className="h-2 w-full max-w-[200px] bg-[var(--surface)] rounded-full mt-4 overflow-hidden border border-[var(--foreground-muted)]/20">
             <div 
                 className="h-full bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] shadow-[0_0_12px_rgba(245,158,11,0.5)] transition-all duration-100 ease-linear"
                 style={{ width: `${(timeLeft / INITIAL_TIME) * 100}%` }}
