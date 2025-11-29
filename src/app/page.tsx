@@ -1,10 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { initializeUserSession } from "@/lib/userSession";
 
 export default function Home() {
   const [points] = useState(15);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    // Initialize user session on mount
+    const initSession = async () => {
+      const userId = await initializeUserSession('math');
+      if (userId) {
+        setIsInitialized(true);
+      }
+      // If userId is null, redirectToMainPlatform was called
+    };
+
+    initSession();
+  }, []);
 
   return (
     <div
