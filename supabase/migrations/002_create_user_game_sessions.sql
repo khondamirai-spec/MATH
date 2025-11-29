@@ -28,3 +28,4 @@ CREATE TRIGGER update_user_game_sessions_updated_at
 -- Comments
 COMMENT ON TABLE user_game_sessions IS 'Tracks user game sessions with start/end times and activity';
 
+

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { initializeUserSession } from "@/lib/userSession";
+import { updateScoreAndGems, getGameIdByName } from "@/lib/gamification";
 
 const QUESTION_DURATION = 5; // seconds per question
 
@@ -84,6 +86,21 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
   const isFirstLoad = useRef(true);
   const hasAnswered = useRef(false);
 
+  const handleBack = async () => {
+    try {
+      const userId = await initializeUserSession('math');
+      if (userId) {
+        const gameId = await getGameIdByName("Kalkulyator");
+        if (gameId) {
+          await updateScoreAndGems(userId, gameId, score);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to save score:", error);
+    }
+    onBack();
+  };
+
   const loadNextQuestion = useCallback((playSound: boolean = true) => {
     const { expression, solution } = buildEquation();
     setEquation(expression);
@@ -164,7 +181,7 @@ export default function CalculatorGame({ onBack }: CalculatorGameProps) {
       {/* Top Navigation Bar */}
       <div className="relative z-30 flex items-center justify-between mb-2">
         <button 
-            onClick={onBack}
+            onClick={handleBack}
             className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--surface)] text-foreground border border-[var(--foreground-muted)]/20 shadow-sm hover:scale-105 transition-all"
             aria-label="Back"
         >

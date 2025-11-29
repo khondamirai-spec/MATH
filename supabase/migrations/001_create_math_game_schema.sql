@@ -192,3 +192,4 @@ COMMENT ON TABLE user_wallet IS 'Stores user''s total diamonds (rewards for beat
 
 COMMENT ON FUNCTION calculate_diamond_reward IS 'Calculates and awards diamonds when user beats their previous record. Returns diamonds earned (0 if no record broken).';
 
+

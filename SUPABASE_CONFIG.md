@@ -48,3 +48,4 @@ You can test the session creation by:
 2. Check Supabase dashboard to see the session record
 3. Check browser localStorage for stored `user_id`
 
+

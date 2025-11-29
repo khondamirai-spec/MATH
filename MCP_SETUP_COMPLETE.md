@@ -94,3 +94,4 @@ All migrations successfully applied to database:
 
 Your Supabase setup is complete and ready to use. The table is created, secured, and your Next.js app is configured to use it.
 
+

@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { initializeUserSession } from "@/lib/userSession";
+import { getUserGems } from "@/lib/gamification";
 
 export default function Home() {
-  const [points] = useState(15);
+  const [points, setPoints] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [debugUserId, setDebugUserId] = useState<string | null>(null);
 
   useEffect(() => {
     // Initialize user session on mount
@@ -14,6 +16,9 @@ export default function Home() {
       const userId = await initializeUserSession('math');
       if (userId) {
         setIsInitialized(true);
+        setDebugUserId(userId);
+        const gems = await getUserGems(userId);
+        setPoints(gems);
       }
       // If userId is null, redirectToMainPlatform was called
     };
@@ -188,6 +193,11 @@ export default function Home() {
             {/* Progress bar */}
             <div className="progress-bar"></div>
           </Link>
+        </div>
+
+        {/* Debug Info */}
+        <div className="mt-8 text-xs text-[color:var(--foreground-muted)] opacity-50">
+          User ID: <span className="font-mono select-all">{debugUserId || "Loading..."}</span>
         </div>
       </main>
     </div>

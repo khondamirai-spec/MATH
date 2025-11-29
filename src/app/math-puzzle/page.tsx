@@ -1,16 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PuzzlePage, { type PuzzleMode } from "@/components/puzzle/PuzzlePage";
 import CalculatorGame from "@/components/puzzle/CalculatorGame";
 import GuessTheSignGame from "@/components/puzzle/GuessTheSignGame";
 import CorrectAnswerGame from "@/components/puzzle/CorrectAnswerGame";
 import QuickCalculationGame from "@/components/puzzle/QuickCalculationGame";
+import { initializeUserSession } from "@/lib/userSession";
+import { getUserGameRecords } from "@/lib/gamification";
 
-const mathModes: PuzzleMode[] = [
+const initialMathModes: PuzzleMode[] = [
   {
     title: "Kalkulyator",
-    score: 15,
+    score: 0,
     icon: "hourglass",
     subtitle: "Klassik rejim • Vaqtni yeng",
     scoreLabel: "Kalkulyator bali",
@@ -44,6 +46,24 @@ const mathModes: PuzzleMode[] = [
 
 export default function MathPuzzlePage() {
   const [activeGame, setActiveGame] = useState<string | null>(null);
+  const [modes, setModes] = useState<PuzzleMode[]>(initialMathModes);
+
+  useEffect(() => {
+    if (activeGame) return;
+
+    const fetchScores = async () => {
+      const userId = await initializeUserSession('math');
+      if (userId) {
+        const records = await getUserGameRecords(userId);
+        setModes(prevModes => prevModes.map(mode => ({
+          ...mode,
+          score: records[mode.title] || 0
+        })));
+      }
+    };
+
+    fetchScores();
+  }, [activeGame]);
 
   if (activeGame === "Kalkulyator") {
     return <CalculatorGame onBack={() => setActiveGame(null)} />;
@@ -66,7 +86,7 @@ export default function MathPuzzlePage() {
       eyebrow="🧩 Mantiqiy O'yinlar"
       title="Matematik Boshqotirma"
       subtitle="Tez hisob-kitoblar bilan miyangni mashq qil"
-      modes={mathModes}
+      modes={modes}
       onPlay={(mode) => setActiveGame(mode)}
     />
   );
