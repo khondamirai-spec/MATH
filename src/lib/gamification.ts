@@ -53,20 +53,22 @@ export async function updateScoreAndGems(
 
 /**
  * Fetches the user's current gem balance.
+ * Returns 0 for new users who haven't played any games yet.
  */
 export async function getUserGems(userId: string): Promise<number> {
   const { data, error } = await supabase
     .from('user_wallet')
     .select('total_gems')
     .eq('user_id', userId)
-    .single();
+    .maybeSingle(); // Use maybeSingle() to return null instead of error when no rows
 
   if (error) {
     console.error('Error fetching user gems:', error);
     return 0;
   }
 
-  return data?.total_gems || 0;
+  // New users won't have a wallet entry yet - return 0
+  return data?.total_gems ?? 0;
 }
 
 /**

@@ -1,9 +1,45 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { initializeUserSession } from "@/lib/userSession";
+import { updateScoreAndGems, getGameIdByName } from "@/lib/gamification";
+import { supabase } from "@/lib/supabase";
 
-interface MagicTriangleGameProps {
-  onBack: () => void;
+const CORRECT_STREAK_FOR_LEVEL_UP = 2;
+const MAX_HEARTS = 3;
+
+// Heart break sound effect
+const playHeartBreakSound = () => {
+  try {
+    const audioContext = new (window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.3);
+    oscillator.type = 'sawtooth';
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+    
+    setTimeout(() => audioContext.close(), 400);
+  } catch {
+    // Audio not supported
+  }
+};
+
+interface LevelConfig {
+  id: string;
+  level: number;
+  number_range_min: number;
+  number_range_max: number;
+  question_count: number;
 }
 
 type NodePosition = {
@@ -13,30 +49,21 @@ type NodePosition = {
   value: number | null;
 };
 
-// Triangle node positions (6 positions: 3 corners + 3 midpoints)
-// Layout:
-//       0 (top)
-//      / \
-//     3   4
-//    /     \
-//   1---5---2
 const INITIAL_POSITIONS: Omit<NodePosition, "value">[] = [
-  { id: 0, x: 50, y: 8 },   // Top corner
-  { id: 1, x: 12, y: 85 },   // Bottom left corner
-  { id: 2, x: 88, y: 85 },   // Bottom right corner
-  { id: 3, x: 31, y: 46 },   // Left edge midpoint (0-1)
-  { id: 4, x: 69, y: 46 },   // Right edge midpoint (0-2)
-  { id: 5, x: 50, y: 85 },   // Bottom edge midpoint (1-2)
+  { id: 0, x: 50, y: 8 },
+  { id: 1, x: 12, y: 85 },
+  { id: 2, x: 88, y: 85 },
+  { id: 3, x: 31, y: 46 },
+  { id: 4, x: 69, y: 46 },
+  { id: 5, x: 50, y: 85 },
 ];
 
-// Define the three sides of the triangle
 const TRIANGLE_SIDES = [
-  [0, 3, 1], // Left side: top -> left mid -> bottom left
-  [0, 4, 2], // Right side: top -> right mid -> bottom right
-  [1, 5, 2], // Bottom side: bottom left -> bottom mid -> bottom right
+  [0, 3, 1],
+  [0, 4, 2],
+  [1, 5, 2],
 ];
 
-// Lines connecting nodes for visual representation
 const TRIANGLE_LINES = [
   { from: 0, to: 3 },
   { from: 3, to: 1 },
@@ -53,7 +80,18 @@ const CORNER_SETS: Record<number, number[]> = {
   12: [4, 5, 6],
 };
 
+interface MagicTriangleGameProps {
+  onBack: () => void;
+}
+
+type GamePhase = 'tutorial' | 'playing' | 'finished';
+
 export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
+  const [gamePhase, setGamePhase] = useState<GamePhase>('tutorial');
+  const [levels, setLevels] = useState<LevelConfig[]>([]);
+  const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
+  const [isLoadingLevels, setIsLoadingLevels] = useState(true);
+
   const [nodes, setNodes] = useState<NodePosition[]>(
     INITIAL_POSITIONS.map((p) => ({ ...p, value: null }))
   );
@@ -61,13 +99,89 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
   const [targetSum, setTargetSum] = useState(9);
   const [score, setScore] = useState(0);
+  const [hearts, setHearts] = useState(MAX_HEARTS);
   const [timeLeft, setTimeLeft] = useState(120);
-  const [isTutorialOpen, setIsTutorialOpen] = useState(true);
-  const [isGameOver, setIsGameOver] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [level, setLevel] = useState(1);
   const [isWin, setIsWin] = useState(false);
+  const [correctStreak, setCorrectStreak] = useState(0);
+
+  const isFirstLoad = useRef(true);
+  const currentLevel = levels[currentLevelIndex] || null;
+
+  useEffect(() => {
+    const fetchLevels = async () => {
+      setIsLoadingLevels(true);
+      try {
+        const { data: minigame } = await supabase
+          .from('minigames')
+          .select('id')
+          .eq('code', 'magic_triangle')
+          .single();
+
+        if (!minigame) {
+          setLevels([
+            { id: '1', level: 1, number_range_min: 1, number_range_max: 6, question_count: 10 },
+            { id: '2', level: 2, number_range_min: 1, number_range_max: 9, question_count: 25 },
+            { id: '3', level: 3, number_range_min: 1, number_range_max: 12, question_count: 35 },
+          ]);
+        } else {
+          const { data: levelData } = await supabase
+            .from('minigame_levels')
+            .select('id, level, number_range_min, number_range_max, question_count')
+            .eq('minigame_id', minigame.id)
+            .order('level', { ascending: true });
+
+          if (!levelData || levelData.length === 0) {
+            setLevels([
+              { id: '1', level: 1, number_range_min: 1, number_range_max: 6, question_count: 10 },
+              { id: '2', level: 2, number_range_min: 1, number_range_max: 9, question_count: 25 },
+              { id: '3', level: 3, number_range_min: 1, number_range_max: 12, question_count: 35 },
+            ]);
+          } else {
+            setLevels(levelData);
+          }
+        }
+      } catch {
+        setLevels([
+          { id: '1', level: 1, number_range_min: 1, number_range_max: 6, question_count: 10 },
+          { id: '2', level: 2, number_range_min: 1, number_range_max: 9, question_count: 25 },
+          { id: '3', level: 3, number_range_min: 1, number_range_max: 12, question_count: 35 },
+        ]);
+      }
+      setIsLoadingLevels(false);
+    };
+    fetchLevels();
+  }, []);
+
+  // Save score to database
+  const saveScore = useCallback(async () => {
+    if (score > 0) {
+      try {
+        const userId = await initializeUserSession('math');
+        if (userId) {
+          const gameId = await getGameIdByName("Sehrli Uchburchak");
+          if (gameId) {
+            await updateScoreAndGems(userId, gameId, score);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to save score:", error);
+      }
+    }
+  }, [score]);
+
+  // Auto-save score when game finishes
+  useEffect(() => {
+    if (gamePhase === 'finished') {
+      saveScore();
+    }
+  }, [gamePhase, saveScore]);
+
+  const handleBack = async () => {
+    await saveScore();
+    onBack();
+  };
 
   const formatTime = (seconds: number) => {
     const safeSeconds = Math.max(0, Math.floor(seconds));
@@ -76,54 +190,9 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
     return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
-  // Generate all valid solutions for the current target
-  const generateSolutions = useCallback((target: number) => {
-    const corners = CORNER_SETS[target];
-    if (!corners) return [];
-
-    // Permute corners (3! = 6 permutations)
-    const perms = [
-      [corners[0], corners[1], corners[2]],
-      [corners[0], corners[2], corners[1]],
-      [corners[1], corners[0], corners[2]],
-      [corners[1], corners[2], corners[0]],
-      [corners[2], corners[0], corners[1]],
-      [corners[2], corners[1], corners[0]],
-    ];
-
-    return perms.map((p) => {
-      const c0 = p[0]; // Top
-      const c1 = p[1]; // Bottom Left
-      const c2 = p[2]; // Bottom Right
-      
-      // Calculate mids
-      // Side 0-1 (nodes 0,3,1): c0 + m3 + c1 = target => m3 = target - c0 - c1
-      const m3 = target - c0 - c1;
-      
-      // Side 0-2 (nodes 0,4,2): c0 + m4 + c2 = target => m4 = target - c0 - c2
-      const m4 = target - c0 - c2;
-      
-      // Side 1-2 (nodes 1,5,2): c1 + m5 + c2 = target => m5 = target - c1 - c2
-      const m5 = target - c1 - c2;
-
-      return {
-        0: c0,
-        1: c1,
-        2: c2,
-        3: m3,
-        4: m4,
-        5: m5,
-      };
-    });
-  }, []);
-
-  // Generate a new puzzle with a valid solution
   const generatePuzzle = useCallback(() => {
-    // Magic triangles have specific valid sums: 9, 10, 11, 12
-    // For numbers 1-6, the possible magic sums are 9, 10, 11, 12
     const possibleSums = [9, 10, 11, 12];
     const newTarget = possibleSums[Math.floor(Math.random() * possibleSums.length)];
-    
     setTargetSum(newTarget);
     setNodes(INITIAL_POSITIONS.map((p) => ({ ...p, value: null })));
     setAvailableNumbers([1, 2, 3, 4, 5, 6]);
@@ -132,10 +201,7 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
   }, []);
 
   const checkSolution = useCallback((currentNodes: NodePosition[]) => {
-    // Check if all nodes have values
     if (currentNodes.some((n) => n.value === null)) return false;
-
-    // Check each side sums to target
     for (const side of TRIANGLE_SIDES) {
       const sum = side.reduce((acc, nodeId) => {
         const node = currentNodes.find((n) => n.id === nodeId);
@@ -146,185 +212,103 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
     return true;
   }, [targetSum]);
 
-  const handleWin = useCallback((currentNodes: NodePosition[]) => {
+  const handleWin = useCallback(() => {
     setIsWin(true);
     const baseScore = 10;
     const timeBonus = Math.floor(timeLeft / 10);
     const totalScore = baseScore + timeBonus;
     setScore((s) => s + totalScore);
     setMessage(`+${totalScore}`);
-    
+
+    const newStreak = correctStreak + 1;
+    setCorrectStreak(newStreak);
+
+    if (newStreak >= CORRECT_STREAK_FOR_LEVEL_UP && currentLevelIndex < levels.length - 1) {
+      setCurrentLevelIndex((idx) => idx + 1);
+      setCorrectStreak(0);
+    }
+
     setTimeout(() => {
       setMessage(null);
       setLevel((l) => l + 1);
       generatePuzzle();
     }, 1500);
-  }, [timeLeft, generatePuzzle]);
+  }, [timeLeft, generatePuzzle, correctStreak, currentLevelIndex, levels.length]);
 
-  const handleHint = () => {
-    if (isGameOver || isPaused || isTutorialOpen) return;
-    
-    const solutions = generateSolutions(targetSum);
-    const currentMap = new Map<number, number>();
-    nodes.forEach(n => {
-      if (n.value !== null) currentMap.set(n.id, n.value);
-    });
-    
-    // Find compatible solutions (subset match)
-    const compatible = solutions.filter(sol => {
-      for (const [id, val] of currentMap.entries()) {
-        if (sol[id as keyof typeof sol] !== val) return false;
-      }
-      return true;
-    });
-    
-    let targetSolution: Record<number, number>;
-    let isCorrection = false;
-    
-    if (compatible.length > 0) {
-      targetSolution = compatible[0];
-    } else {
-      // Find solution with most matches
-      targetSolution = solutions.reduce((best, curr) => {
-        let matches = 0;
-        for (const [id, val] of currentMap.entries()) {
-          if (curr[id as keyof typeof curr] === val) matches++;
-        }
-        return matches > best.matches ? { sol: curr, matches } : best;
-      }, { sol: solutions[0], matches: -1 }).sol;
-      isCorrection = true;
-    }
-    
-    let nodeToFixId = -1;
-    
-    if (isCorrection) {
-       // Find first conflict
-       nodeToFixId = nodes.find(n => n.value !== null && targetSolution[n.id as keyof typeof targetSolution] !== n.value)?.id ?? -1;
-    } 
-    
-    // If no conflict (or corrected), find empty
-    if (nodeToFixId === -1) {
-       nodeToFixId = nodes.find(n => n.value === null)?.id ?? -1;
-    }
-    
-    if (nodeToFixId !== -1) {
-       const correctValue = targetSolution[nodeToFixId as keyof typeof targetSolution];
-       const oldVal = nodes.find(n => n.id === nodeToFixId)?.value;
-       
-       // Update nodes
-       const newNodes = nodes.map(n => n.id === nodeToFixId ? { ...n, value: correctValue } : n);
-       setNodes(newNodes);
-       
-       // Update available numbers: return oldVal, remove correctValue
-       setAvailableNumbers(prev => {
-         let next = [...prev];
-         if (oldVal !== null && oldVal !== undefined) next.push(oldVal);
-         // Filter out ONLY the correctValue instance we just placed
-         // But since numbers are unique 1-6, simple filter is fine
-         next = next.filter(n => n !== correctValue);
-         return next.sort((a,b) => a-b);
-       });
-       
-       // If we overwrote a selected number, deselect
-       if (selectedNumber === correctValue) {
-         setSelectedNumber(null);
-       }
-
-       if (checkSolution(newNodes)) {
-         handleWin(newNodes);
-       }
-    }
-  };
-
-  const handleResetBoard = () => {
-    if (isGameOver || isPaused || isTutorialOpen) return;
-    setNodes(INITIAL_POSITIONS.map(p => ({ ...p, value: null })));
-    setAvailableNumbers([1, 2, 3, 4, 5, 6]);
-    setSelectedNumber(null);
-  };
-
-  // Initialize game
   useEffect(() => {
-    generatePuzzle();
-  }, [generatePuzzle]);
-
-  // Timer
-  useEffect(() => {
-    if (isTutorialOpen || isGameOver || isPaused) return;
-
+    if (gamePhase !== 'playing') return;
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 0) {
-          setIsGameOver(true);
-          return 0;
+          playHeartBreakSound();
+          setHearts((h) => {
+            const newHearts = h - 1;
+            if (newHearts <= 0) {
+              setTimeout(() => setGamePhase('finished'), 500);
+            }
+            return newHearts;
+          });
+          return 120; // Reset timer
         }
         return prev - 0.1;
       });
     }, 100);
-
     return () => clearInterval(timer);
-  }, [isTutorialOpen, isGameOver, isPaused]);
+  }, [gamePhase]);
 
-
-  // Handle clicking on a number in the pool
   const handleNumberSelect = (num: number) => {
-    if (isGameOver || isPaused || isTutorialOpen) return;
-    
-    if (selectedNumber === num) {
-      setSelectedNumber(null);
-    } else {
-      setSelectedNumber(num);
-    }
+    if (gamePhase !== 'playing') return;
+    setSelectedNumber(selectedNumber === num ? null : num);
   };
 
-  // Handle clicking on a node position
   const handleNodeClick = (nodeId: number) => {
-    if (isGameOver || isPaused || isTutorialOpen) return;
-
+    if (gamePhase !== 'playing') return;
     const node = nodes.find((n) => n.id === nodeId);
     if (!node) return;
 
-    // If node has a value, remove it back to pool
     if (node.value !== null) {
       const valueToReturn = node.value;
-      setNodes((prev) =>
-        prev.map((n) => (n.id === nodeId ? { ...n, value: null } : n))
-      );
+      setNodes((prev) => prev.map((n) => (n.id === nodeId ? { ...n, value: null } : n)));
       setAvailableNumbers((prev) => [...prev, valueToReturn].sort((a, b) => a - b));
       return;
     }
 
-    // If a number is selected and node is empty, place it
     if (selectedNumber !== null && node.value === null) {
-      const newNodes = nodes.map((n) =>
-        n.id === nodeId ? { ...n, value: selectedNumber } : n
-      );
+      const newNodes = nodes.map((n) => n.id === nodeId ? { ...n, value: selectedNumber } : n);
       setNodes(newNodes);
       setAvailableNumbers((prev) => prev.filter((n) => n !== selectedNumber));
       setSelectedNumber(null);
 
-      // Check for solution after placement
       if (checkSolution(newNodes)) {
-        handleWin(newNodes);
+        handleWin();
       }
     }
   };
 
-  const handleRestart = () => {
-    generatePuzzle();
-    setScore(0);
-    setTimeLeft(120);
-    setIsGameOver(false);
-    setIsPaused(false);
-    setLevel(1);
+  const startGame = () => {
+    setGamePhase('playing');
+    if (isFirstLoad.current) {
+      isFirstLoad.current = false;
+      generatePuzzle();
+      setTimeLeft(120);
+    }
   };
 
-  // Get the sum of each side for display
+  const restartGame = () => {
+    setScore(0);
+    setHearts(MAX_HEARTS);
+    setLevel(1);
+    setCorrectStreak(0);
+    setCurrentLevelIndex(0);
+    setTimeLeft(120);
+    setGamePhase('tutorial');
+    isFirstLoad.current = true;
+  };
+
   const getSideSum = (sideIndex: number): number | null => {
     const side = TRIANGLE_SIDES[sideIndex];
     let hasAllValues = true;
     let sum = 0;
-    
     for (const nodeId of side) {
       const node = nodes.find((n) => n.id === nodeId);
       if (!node || node.value === null) {
@@ -333,120 +317,199 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
       }
       sum += node.value;
     }
-    
     return hasAllValues ? sum : null;
   };
 
+  if (isLoadingLevels) {
+    return (
+      <div className="relative flex flex-col h-screen bg-background text-foreground p-4 max-w-md mx-auto">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (gamePhase === 'tutorial') {
+    return (
+      <div className="relative flex flex-col h-screen bg-background text-foreground p-4 max-w-md mx-auto overflow-hidden font-sans">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-full bg-[var(--surface)] rounded-3xl p-6 pb-8 border border-[var(--foreground-muted)]/10 shadow-2xl">
+            <h2 className="text-xl font-bold text-center mb-4 text-foreground">🔺 Sehrli Uchburchak</h2>
+            
+            <div className="bg-background p-4 rounded-xl mb-4 border border-[var(--foreground-muted)]/20">
+              <div className="text-4xl font-bold text-foreground mb-3">{targetSum}</div>
+              <h3 className="text-foreground font-bold text-lg mb-2">1-6 raqamlarini uchburchakka joylashtiring</h3>
+              
+              <div className="relative w-24 h-24 mx-auto my-4">
+                <svg className="w-full h-full" viewBox="0 0 100 100">
+                  <polygon points="50,10 10,90 90,90" fill="none" stroke="rgba(109,40,217,0.4)" strokeWidth="2"/>
+                  {[
+                    { x: 50, y: 10 },
+                    { x: 10, y: 90 },
+                    { x: 90, y: 90 },
+                    { x: 30, y: 50 },
+                    { x: 70, y: 50 },
+                    { x: 50, y: 90 },
+                  ].map((pos, i) => (
+                    <circle key={i} cx={pos.x} cy={pos.y} r="8" fill="rgba(109,40,217,0.3)" />
+                  ))}
+                </svg>
+              </div>
+            </div>
+
+            <p className="text-[var(--foreground-muted)] text-sm mb-4 leading-relaxed px-2">
+              Har bir tomon yig'indisi <span className="text-[#c026d3] font-bold">{targetSum}</span> bo'ladigan qilib joylashtiring. Qanchalik ko'p to'g'ri yechsangiz, qiyinlashadi.
+            </p>
+
+            <div className="flex flex-col gap-2 mb-6 px-8">
+              <div className="flex justify-between items-center">
+                <span className="text-foreground font-medium">+10 💎</span>
+                <span className="text-[var(--foreground-muted)] text-sm">har bir yechim uchun</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-foreground font-medium">+bonus</span>
+                <span className="text-[var(--foreground-muted)] text-sm">qolgan vaqt uchun</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-foreground font-medium">❤️ → 💔</span>
+                <span className="text-[var(--foreground-muted)] text-sm">vaqt tugaganda yurak sinadi</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-foreground font-medium">3 ❤️</span>
+                <span className="text-[var(--foreground-muted)] text-sm">barcha yuraklar sinsa, o'yin tugaydi</span>
+              </div>
+            </div>
+
+            <button 
+              onClick={startGame}
+              className="w-full py-4 rounded-full text-white font-bold tracking-wide shadow-lg active:scale-95 transition-transform uppercase text-sm"
+              style={{ background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 55%, #c026d3 100%)' }}
+            >
+              Boshlash
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (gamePhase === 'finished') {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/90 backdrop-blur-md">
+        <div className="bg-[var(--surface)] border border-[var(--foreground-muted)]/20 p-8 rounded-3xl w-full max-w-sm text-center">
+          <div className="text-6xl mb-4">💔</div>
+          <h2 className="text-3xl font-bold text-foreground mb-2">O'yin tugadi!</h2>
+          <p className="text-[var(--foreground-muted)] mb-4">Barcha yuraklar tugadi</p>
+          <p className="text-xl text-[var(--foreground-muted)] mb-2">Yakuniy ball: {score}</p>
+          <p className="text-lg text-[var(--foreground-muted)] mb-8">Erishilgan daraja: {currentLevelIndex + 1}</p>
+          
+          <div className="flex flex-col gap-3">
+            <button 
+              onClick={restartGame}
+              className="w-full py-3 text-white font-bold rounded-full hover:opacity-90 transition-opacity shadow-lg"
+              style={{ background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 55%, #c026d3 100%)' }}
+            >
+              Qayta o'ynash
+            </button>
+            <button 
+              onClick={handleBack}
+              className="w-full py-3 bg-transparent border border-[var(--foreground-muted)]/20 text-foreground font-bold rounded-full hover:bg-[var(--surface)]/50 transition-colors"
+            >
+              Chiqish
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative flex flex-col h-screen bg-background text-foreground p-4 max-w-md mx-auto overflow-hidden font-sans">
-      {/* Header */}
       <div className="relative z-30 flex items-center justify-between mb-2 px-4 py-3">
-        <button
-          onClick={onBack}
-          className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--surface)] text-foreground border border-[var(--foreground-muted)]/20 shadow-sm hover:scale-105 transition-all"
-          aria-label="Back"
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
+        <button onClick={handleBack} className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--surface)] text-foreground border border-[var(--foreground-muted)]/20 shadow-sm hover:scale-105 transition-all" aria-label="Back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
         </button>
 
-        <div className="absolute left-1/2 -translate-x-1/2 text-xl font-bold text-[var(--foreground-muted)]">
-          {formatTime(timeLeft)}
+        {/* Hearts Display */}
+        <div className="flex items-center gap-1">
+          {Array.from({ length: MAX_HEARTS }).map((_, idx) => (
+            <span 
+              key={idx} 
+              className={`text-2xl transition-all duration-300 ${
+                idx < hearts 
+                  ? 'scale-100 opacity-100' 
+                  : 'scale-75 opacity-50 grayscale'
+              }`}
+            >
+              {idx < hearts ? '❤️' : '🖤'}
+            </span>
+          ))}
         </div>
 
-        <div className="flex items-center gap-2 text-xl font-bold text-foreground">
-          <span>💎</span>
-          <span>{score}</span>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1">
+            {levels.map((_, idx) => (
+              <div key={idx} className={`w-2 h-2 rounded-full transition-all ${idx <= currentLevelIndex ? 'bg-purple-500' : 'bg-[var(--foreground-muted)]/30'}`}/>
+            ))}
+          </div>
+          <div className="flex items-center gap-2 text-xl font-bold text-foreground">
+            <span>💎</span><span>{score}</span>
+          </div>
         </div>
       </div>
 
-      {/* Target Display */}
       <div className="flex flex-col items-center justify-center mb-4">
-        <button 
-          onClick={() => setIsTutorialOpen(true)}
-          className="text-xs font-bold text-[var(--foreground-muted)] tracking-widest mb-2 uppercase hover:text-foreground transition-colors cursor-pointer"
-        >
-          SEHRLI UCHBURCHAK ℹ
-        </button>
+        <div className="text-xs font-bold text-[var(--foreground-muted)] tracking-widest mb-2 uppercase">SEHRLI UCHBURCHAK</div>
         <div className="text-5xl font-bold text-foreground mb-1 transition-all">{targetSum}</div>
         <div className="text-sm text-[var(--foreground-muted)]">Daraja {level}</div>
-        {message && (
-          <div className="text-lg font-bold text-green-500 animate-pulse mt-2">
-            {message}
-          </div>
-        )}
+        {message && <div className="text-lg font-bold text-green-500 animate-pulse mt-2">{message}</div>}
       </div>
 
-      {/* Triangle Area */}
+      {currentLevelIndex < levels.length - 1 && (
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <div className="flex gap-1">
+            {Array.from({ length: CORRECT_STREAK_FOR_LEVEL_UP }).map((_, idx) => (
+              <div key={idx} className={`w-3 h-3 rounded-full transition-all ${idx < correctStreak ? 'bg-green-500 scale-110' : 'bg-[var(--foreground-muted)]/20'}`}/>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="relative w-full aspect-square max-w-[340px] mx-auto mb-4">
-        {/* SVG for lines */}
         <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
           {TRIANGLE_LINES.map((line, idx) => {
             const fromNode = INITIAL_POSITIONS.find((p) => p.id === line.from)!;
             const toNode = INITIAL_POSITIONS.find((p) => p.id === line.to)!;
-            return (
-              <line
-                key={idx}
-                x1={fromNode.x}
-                y1={fromNode.y}
-                x2={toNode.x}
-                y2={toNode.y}
-                stroke="rgba(255,255,255,0.2)"
-                strokeWidth="0.5"
-              />
-            );
+            return <line key={idx} x1={fromNode.x} y1={fromNode.y} x2={toNode.x} y2={toNode.y} stroke="rgba(255,255,255,0.2)" strokeWidth="0.5"/>;
           })}
         </svg>
 
-        {/* Node positions */}
         {nodes.map((node) => {
           const hasValue = node.value !== null;
           return (
             <button
               key={node.id}
               onClick={() => handleNodeClick(node.id)}
-              className={`
-                absolute w-14 h-14 -ml-7 -mt-7 rounded-2xl flex items-center justify-center text-2xl font-bold
-                transition-all duration-200 transform
-                ${hasValue 
-                  ? 'bg-[var(--surface)] text-foreground border-2 border-[#6d28d9]/50 shadow-[0_0_20px_rgba(109,40,217,0.3)] hover:scale-110 active:scale-95' 
-                  : 'bg-[var(--surface)]/60 border border-[var(--foreground-muted)]/30 hover:border-[#6d28d9]/50 hover:bg-[var(--surface)]'
-                }
-                ${!hasValue && selectedNumber !== null ? 'animate-pulse border-[#6d28d9]/50' : ''}
-              `}
-              style={{
-                left: `${node.x}%`,
-                top: `${node.y}%`,
-              }}
-              aria-label={hasValue ? `Qiymat ${node.value} bo'lgan tugun, o'chirish uchun bosing` : `Bo'sh tugun, raqam qo'yish uchun bosing`}
+              className={`absolute w-14 h-14 -ml-7 -mt-7 rounded-2xl flex items-center justify-center text-2xl font-bold transition-all duration-200 transform
+                ${hasValue ? 'bg-[var(--surface)] text-foreground border-2 border-[#6d28d9]/50 shadow-[0_0_20px_rgba(109,40,217,0.3)] hover:scale-110 active:scale-95' : 'bg-[var(--surface)]/60 border border-[var(--foreground-muted)]/30 hover:border-[#6d28d9]/50 hover:bg-[var(--surface)]'}
+                ${!hasValue && selectedNumber !== null ? 'animate-pulse border-[#6d28d9]/50' : ''}`}
+              style={{ left: `${node.x}%`, top: `${node.y}%` }}
             >
               {node.value}
             </button>
           );
         })}
 
-        {/* Side sum indicators */}
-        {[
-          { x: 18, y: 30 },  // Left side
-          { x: 78, y: 30 },  // Right side  
-          { x: 50, y: 95 },  // Bottom side
-        ].map((pos, idx) => {
+        {[{ x: 18, y: 30 }, { x: 78, y: 30 }, { x: 50, y: 95 }].map((pos, idx) => {
           const sum = getSideSum(idx);
           const isCorrect = sum === targetSum;
           return sum !== null ? (
-            <div
-              key={idx}
-              className={`absolute text-sm font-bold -translate-x-1/2 -translate-y-1/2 ${isCorrect ? 'text-green-400' : 'text-[#c026d3]'}`}
-              style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
-            >
-              = {sum}
-            </div>
+            <div key={idx} className={`absolute text-sm font-bold -translate-x-1/2 -translate-y-1/2 ${isCorrect ? 'text-green-400' : 'text-[#c026d3]'}`} style={{ left: `${pos.x}%`, top: `${pos.y}%` }}>= {sum}</div>
           ) : null;
         })}
       </div>
 
-      {/* Number Pool */}
       <div className="mt-auto">
         <div className="grid grid-cols-3 gap-3 max-w-[280px] mx-auto">
           {[1, 2, 3, 4, 5, 6].map((num) => {
@@ -457,16 +520,8 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
                 key={num}
                 onClick={() => isAvailable && handleNumberSelect(num)}
                 disabled={!isAvailable}
-                className={`
-                  h-16 rounded-2xl text-2xl font-bold transition-all duration-200
-                  ${!isAvailable 
-                    ? 'opacity-0 pointer-events-none' 
-                    : isSelected
-                      ? 'bg-[#6d28d9] text-white scale-95 shadow-[0_0_25px_rgba(109,40,217,0.5)] border-2 border-[#c026d3]'
-                      : 'bg-transparent border-2 border-[#6d28d9]/60 text-[#c026d3] hover:border-[#c026d3] hover:text-[#6d28d9] active:scale-95'
-                  }
-                `}
-                aria-label={`Raqam ${num}${isSelected ? ', tanlangan' : ''}`}
+                className={`h-16 rounded-2xl text-2xl font-bold transition-all duration-200
+                  ${!isAvailable ? 'opacity-0 pointer-events-none' : isSelected ? 'bg-[#6d28d9] text-white scale-95 shadow-[0_0_25px_rgba(109,40,217,0.5)] border-2 border-[#c026d3]' : 'bg-transparent border-2 border-[#6d28d9]/60 text-[#c026d3] hover:border-[#c026d3] hover:text-[#6d28d9] active:scale-95'}`}
               >
                 {isAvailable ? num : ''}
               </button>
@@ -481,134 +536,6 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
         )}
       </div>
 
-      {/* Tutorial Modal */}
-      <div className={`fixed inset-0 z-50 flex items-end justify-center ${isTutorialOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
-        <div 
-          className={`absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-300 ${isTutorialOpen ? 'opacity-100' : 'opacity-0'}`}
-          onClick={() => setIsTutorialOpen(false)}
-        />
-        
-        <div className={`relative z-10 w-full max-w-md bg-[var(--surface)] rounded-t-[2rem] p-6 pb-8 transition-transform duration-300 ease-out transform ${isTutorialOpen ? 'translate-y-0' : 'translate-y-full'} border-t border-[var(--foreground-muted)]/10 shadow-2xl`}>
-          <div className="w-12 h-1 bg-[var(--foreground-muted)] rounded-full mx-auto mb-6 opacity-30" />
-          
-          <h2 className="text-xl font-bold text-center mb-4 text-foreground">Sehrli Uchburchak</h2>
-          
-          <div className="bg-background p-4 rounded-xl mb-4 border border-[var(--foreground-muted)]/20">
-            <div className="text-4xl font-bold text-foreground mb-3">{targetSum}</div>
-            <h3 className="text-foreground font-bold text-lg mb-2">1-6 raqamlarini uchburchakka joylashtiring</h3>
-            
-            {/* Mini Triangle Visual */}
-            <div className="relative w-24 h-24 mx-auto my-4">
-              <svg className="w-full h-full" viewBox="0 0 100 100">
-                <polygon 
-                  points="50,10 10,90 90,90" 
-                  fill="none" 
-                  stroke="rgba(109,40,217,0.4)" 
-                  strokeWidth="2"
-                />
-                {[
-                  { x: 50, y: 10 },
-                  { x: 10, y: 90 },
-                  { x: 90, y: 90 },
-                  { x: 30, y: 50 },
-                  { x: 70, y: 50 },
-                  { x: 50, y: 90 },
-                ].map((pos, i) => (
-                  <circle key={i} cx={pos.x} cy={pos.y} r="8" fill="rgba(109,40,217,0.3)" />
-                ))}
-              </svg>
-            </div>
-          </div>
-
-          <p className="text-[var(--foreground-muted)] text-sm mb-4 leading-relaxed px-2">
-            1-6 raqamlarini uchburchakka har bir tomon yig'indisi <span className="text-[#c026d3] font-bold">{targetSum}</span> bo'ladigan qilib joylashtiring.
-            <br/><br/>
-            • Tanlash uchun pastdagi raqamni bosing<br/>
-            • Joylashtirish uchun doirani bosing<br/>
-            • O'chirish uchun joylashtirilgan raqamni bosing
-          </p>
-
-          <div className="flex flex-col gap-2 mb-6 px-8">
-            <div className="flex justify-between items-center">
-              <span className="text-foreground font-medium">+10</span>
-              <span className="text-[var(--foreground-muted)] text-sm">har bir yechim uchun asosiy ball</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-foreground font-medium">+bonus</span>
-              <span className="text-[var(--foreground-muted)] text-sm">qolgan vaqt uchun</span>
-            </div>
-          </div>
-
-          <button 
-            onClick={() => setIsTutorialOpen(false)}
-            className="w-full py-4 rounded-full text-white font-bold tracking-wide shadow-lg active:scale-95 transition-transform uppercase text-sm"
-            style={{ background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 55%, #c026d3 100%)' }}
-          >
-            Tushundim!
-          </button>
-        </div>
-      </div>
-
-      {/* Pause Modal */}
-      {isPaused && !isGameOver && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/90 backdrop-blur-md">
-          <div className="bg-[var(--surface)] border border-[var(--foreground-muted)]/20 p-8 rounded-3xl w-full max-w-sm text-center">
-            <h2 className="text-3xl font-bold text-foreground mb-2">To'xtatildi</h2>
-            <p className="text-xl text-[var(--foreground-muted)] mb-8">Daraja {level} • Ball: {score}</p>
-            
-            <div className="flex flex-col gap-3">
-              <button 
-                onClick={() => setIsPaused(false)}
-                className="w-full py-3 text-white font-bold rounded-full hover:opacity-90 transition-opacity shadow-lg"
-                style={{ background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 55%, #c026d3 100%)' }}
-              >
-                Davom etish
-              </button>
-              <button 
-                onClick={handleRestart}
-                className="w-full py-3 bg-[var(--surface)]/80 text-foreground border border-[var(--foreground-muted)]/20 font-bold rounded-full hover:bg-[var(--surface)] transition-colors"
-              >
-                Yangi o'yin
-              </button>
-              <button 
-                onClick={onBack}
-                className="w-full py-3 bg-transparent border border-[var(--foreground-muted)]/20 text-foreground font-bold rounded-full hover:bg-[var(--surface)]/50 transition-colors"
-              >
-                Chiqish
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Game Over Modal */}
-      {isGameOver && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/90 backdrop-blur-md">
-          <div className="bg-[var(--surface)] border border-[var(--foreground-muted)]/20 p-8 rounded-3xl w-full max-w-sm text-center">
-            <h2 className="text-3xl font-bold text-foreground mb-2">Vaqt tugadi!</h2>
-            <p className="text-xl text-[var(--foreground-muted)] mb-2">Yakuniy ball: {score}</p>
-            <p className="text-lg text-[var(--foreground-muted)] mb-8">Tugatilgan darajalar: {level - 1}</p>
-            
-            <div className="flex flex-col gap-3">
-              <button 
-                onClick={handleRestart}
-                className="w-full py-3 text-white font-bold rounded-full hover:opacity-90 transition-opacity shadow-lg"
-                style={{ background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 55%, #c026d3 100%)' }}
-              >
-                Qayta o'ynash
-              </button>
-              <button 
-                onClick={onBack}
-                className="w-full py-3 bg-transparent border border-[var(--foreground-muted)]/20 text-foreground font-bold rounded-full hover:bg-[var(--surface)]/50 transition-colors"
-              >
-                Chiqish
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Win animation overlay */}
       {isWin && (
         <div className="fixed inset-0 z-40 flex items-center justify-center pointer-events-none">
           <div className="text-6xl animate-bounce">✨</div>
@@ -617,4 +544,3 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
     </div>
   );
 }
-

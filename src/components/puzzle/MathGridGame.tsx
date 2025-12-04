@@ -1,6 +1,50 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { initializeUserSession } from "@/lib/userSession";
+import { updateScoreAndGems, getGameIdByName } from "@/lib/gamification";
+import { supabase } from "@/lib/supabase";
+
+const INITIAL_TIME = 60;
+const GRID_SIZE = 6;
+const TOTAL_CELLS = 36;
+const CORRECT_STREAK_FOR_LEVEL_UP = 3;
+const MAX_HEARTS = 3;
+
+// Heart break sound effect
+const playHeartBreakSound = () => {
+  try {
+    const audioContext = new (window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.3);
+    oscillator.type = 'sawtooth';
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+    
+    setTimeout(() => audioContext.close(), 400);
+  } catch {
+    // Audio not supported
+  }
+};
+
+// Level configuration from Supabase
+interface LevelConfig {
+  id: string;
+  level: number;
+  number_range_min: number;
+  number_range_max: number;
+  question_count: number;
+}
 
 // Create a "tin tin" bell sound using Web Audio API
 const playTinTinSound = () => {
@@ -37,10 +81,6 @@ const playTinTinSound = () => {
   }
 };
 
-const INITIAL_TIME = 60;
-const GRID_SIZE = 6; // 6x6 grid
-const TOTAL_CELLS = 36;
-
 type Cell = {
   id: number;
   value: number;
@@ -51,24 +91,115 @@ interface MathGridGameProps {
   onBack: () => void;
 }
 
+type GamePhase = 'tutorial' | 'playing' | 'finished';
+
 export default function MathGridGame({ onBack }: MathGridGameProps) {
+  const [gamePhase, setGamePhase] = useState<GamePhase>('tutorial');
+  const [levels, setLevels] = useState<LevelConfig[]>([]);
+  const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
+  const [isLoadingLevels, setIsLoadingLevels] = useState(true);
+  
   const [grid, setGrid] = useState<Cell[]>([]);
   const [target, setTarget] = useState(0);
   const [currentSum, setCurrentSum] = useState(0);
   const [score, setScore] = useState(0);
+  const [hearts, setHearts] = useState(MAX_HEARTS);
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
-  const [isTutorialOpen, setIsTutorialOpen] = useState(true);
-  const [isGameOver, setIsGameOver] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [correctStreak, setCorrectStreak] = useState(0);
+  
   const isFirstLoad = useRef(true);
 
-  // Initialize grid
-  const generateGrid = useCallback(() => {
+  // Get current level config
+  const currentLevel = levels[currentLevelIndex] || null;
+
+  // Fetch levels from Supabase
+  useEffect(() => {
+    const fetchLevels = async () => {
+      setIsLoadingLevels(true);
+      try {
+        const { data: minigame, error: minigameError } = await supabase
+          .from('minigames')
+          .select('id')
+          .eq('code', 'math_grid')
+          .single();
+
+        if (minigameError || !minigame) {
+          console.error('Failed to fetch minigame:', minigameError);
+          setLevels([
+            { id: '1', level: 1, number_range_min: 1, number_range_max: 9, question_count: 10 },
+            { id: '2', level: 2, number_range_min: 1, number_range_max: 20, question_count: 25 },
+            { id: '3', level: 3, number_range_min: 1, number_range_max: 50, question_count: 35 },
+          ]);
+          setIsLoadingLevels(false);
+          return;
+        }
+
+        const { data: levelData, error: levelError } = await supabase
+          .from('minigame_levels')
+          .select('id, level, number_range_min, number_range_max, question_count')
+          .eq('minigame_id', minigame.id)
+          .order('level', { ascending: true });
+
+        if (levelError || !levelData || levelData.length === 0) {
+          setLevels([
+            { id: '1', level: 1, number_range_min: 1, number_range_max: 9, question_count: 10 },
+            { id: '2', level: 2, number_range_min: 1, number_range_max: 20, question_count: 25 },
+            { id: '3', level: 3, number_range_min: 1, number_range_max: 50, question_count: 35 },
+          ]);
+        } else {
+          setLevels(levelData);
+        }
+      } catch (error) {
+        console.error('Error fetching levels:', error);
+        setLevels([
+          { id: '1', level: 1, number_range_min: 1, number_range_max: 9, question_count: 10 },
+          { id: '2', level: 2, number_range_min: 1, number_range_max: 20, question_count: 25 },
+          { id: '3', level: 3, number_range_min: 1, number_range_max: 50, question_count: 35 },
+        ]);
+      }
+      setIsLoadingLevels(false);
+    };
+
+    fetchLevels();
+  }, []);
+
+  // Save score to database
+  const saveScore = useCallback(async () => {
+    if (score > 0) {
+      try {
+        const userId = await initializeUserSession('math');
+        if (userId) {
+          const gameId = await getGameIdByName("Mantiqiy to'r");
+          if (gameId) {
+            await updateScoreAndGems(userId, gameId, score);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to save score:", error);
+      }
+    }
+  }, [score]);
+
+  // Auto-save score when game finishes
+  useEffect(() => {
+    if (gamePhase === 'finished') {
+      saveScore();
+    }
+  }, [gamePhase, saveScore]);
+
+  const handleBack = async () => {
+    await saveScore();
+    onBack();
+  };
+
+  // Initialize grid based on level
+  const generateGrid = useCallback((maxVal: number) => {
     const newGrid: Cell[] = [];
     for (let i = 0; i < TOTAL_CELLS; i++) {
       newGrid.push({
         id: i,
-        value: Math.floor(Math.random() * 9) + 1, // 1-9
+        value: Math.floor(Math.random() * maxVal) + 1,
         state: "default",
       });
     }
@@ -79,8 +210,6 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
     const availableCells = currentGrid.filter((c) => c.state !== "used");
     if (availableCells.length === 0) return 0;
 
-    // Pick 2-4 random available cells to form a target
-    // This ensures at least one solution exists
     const count = Math.min(availableCells.length, Math.floor(Math.random() * 3) + 2);
     const shuffled = [...availableCells].sort(() => Math.random() - 0.5);
     const selected = shuffled.slice(0, count);
@@ -88,44 +217,45 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
     return sum;
   }, []);
 
-  // Initial setup
-  useEffect(() => {
-    const newGrid = generateGrid();
-    setGrid(newGrid);
-    setTarget(generateTarget(newGrid));
-  }, [generateGrid, generateTarget]);
-
   // Timer
   useEffect(() => {
-    if (isTutorialOpen || isGameOver) return;
+    if (gamePhase !== 'playing') return;
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 0) {
-          setIsGameOver(true);
-          return 0;
+          playHeartBreakSound();
+          setHearts((h) => {
+            const newHearts = h - 1;
+            if (newHearts <= 0) {
+              setTimeout(() => setGamePhase('finished'), 500);
+            }
+            return newHearts;
+          });
+          return INITIAL_TIME; // Reset timer
         }
         return prev - 0.1;
       });
     }, 100);
 
     return () => clearInterval(timer);
-  }, [isTutorialOpen, isGameOver]);
+  }, [gamePhase]);
 
   // Check for refill
   useEffect(() => {
+    if (gamePhase !== 'playing' || !currentLevel) return;
+    
     const availableCount = grid.filter((c) => c.state !== "used").length;
-    if (availableCount < 5 && !isGameOver && grid.length > 0) {
-        // Refill board
-        const newGrid = generateGrid();
-        setGrid(newGrid);
-        setTarget(generateTarget(newGrid));
-        setCurrentSum(0);
+    if (availableCount < 5 && grid.length > 0) {
+      const newGrid = generateGrid(currentLevel.number_range_max);
+      setGrid(newGrid);
+      setTarget(generateTarget(newGrid));
+      setCurrentSum(0);
     }
-  }, [grid, isGameOver, generateGrid, generateTarget]);
+  }, [grid, gamePhase, currentLevel, generateGrid, generateTarget]);
 
   const handleCellClick = (id: number) => {
-    if (isGameOver || isTutorialOpen) return;
+    if (gamePhase !== 'playing') return;
 
     const cell = grid.find((c) => c.id === id);
     if (!cell || cell.state === "used") return;
@@ -134,13 +264,11 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
     let newSum = currentSum;
 
     if (cell.state === "selected") {
-      // Deselect
       newGrid = newGrid.map((c) =>
         c.id === id ? { ...c, state: "default" } : c
       );
       newSum -= cell.value;
     } else {
-      // Select
       newGrid = newGrid.map((c) =>
         c.id === id ? { ...c, state: "selected" } : c
       );
@@ -153,11 +281,18 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
     // Check logic
     if (newSum === target) {
       // Correct!
-      const scoreToAdd = 5; // Logic from screenshot: 5.0 for correct answer
+      const scoreToAdd = 5;
       setScore((s) => s + scoreToAdd);
       setMessage("+5.0");
       
-      // Mark selected as used
+      const newStreak = correctStreak + 1;
+      setCorrectStreak(newStreak);
+      
+      if (newStreak >= CORRECT_STREAK_FOR_LEVEL_UP && currentLevelIndex < levels.length - 1) {
+        setCurrentLevelIndex((idx) => idx + 1);
+        setCorrectStreak(0);
+      }
+      
       setTimeout(() => {
         const nextGrid = newGrid.map((c) =>
           c.state === "selected" ? { ...c, state: "used" as const } : c
@@ -169,17 +304,21 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
         playTinTinSound();
       }, 200);
     } else if (newSum > target) {
-      // Wrong! Over the target
-      // Penalty
-      // Logic from screenshot: 5.0 for wrong answer. (Assuming penalty)
-       // Or maybe it just resets? Screenshot shows "5.0 for wrong answer" which is weird if it's positive.
-       // But usually it means -5.
-      setScore((s) => Math.max(0, s - 5));
-      setMessage("-5.0");
+      // Wrong! - lose a heart
+      playHeartBreakSound();
+      setHearts((h) => {
+        const newHearts = h - 1;
+        if (newHearts <= 0) {
+          setTimeout(() => setGamePhase('finished'), 500);
+        }
+        return newHearts;
+      });
+      setMessage("💔");
+      setCorrectStreak(0);
 
       setTimeout(() => {
         const nextGrid = newGrid.map((c) =>
-            c.state === "selected" ? { ...c, state: "default" as const } : c
+          c.state === "selected" ? { ...c, state: "default" as const } : c
         );
         setGrid(nextGrid);
         setCurrentSum(0);
@@ -188,22 +327,136 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
     }
   };
 
-  const handleRestart = () => {
-    const newGrid = generateGrid();
-    setGrid(newGrid);
-    setTarget(generateTarget(newGrid));
-    setScore(0);
-    setCurrentSum(0);
-    setTimeLeft(INITIAL_TIME);
-    setIsGameOver(false);
+  const startGame = () => {
+    setGamePhase('playing');
+    if (isFirstLoad.current && currentLevel) {
+      isFirstLoad.current = false;
+      const newGrid = generateGrid(currentLevel.number_range_max);
+      setGrid(newGrid);
+      setTarget(generateTarget(newGrid));
+      playTinTinSound();
+    }
   };
 
+  const restartGame = () => {
+    setScore(0);
+    setHearts(MAX_HEARTS);
+    setTimeLeft(INITIAL_TIME);
+    setCorrectStreak(0);
+    setCurrentLevelIndex(0);
+    setCurrentSum(0);
+    setGamePhase('tutorial');
+    isFirstLoad.current = true;
+  };
+
+  // Loading
+  if (isLoadingLevels) {
+    return (
+      <div className="relative flex flex-col h-screen bg-background text-foreground p-4 max-w-md mx-auto overflow-hidden">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Tutorial
+  if (gamePhase === 'tutorial') {
+    return (
+      <div className="relative flex flex-col h-screen bg-background text-foreground p-4 max-w-md mx-auto overflow-hidden">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-full bg-[var(--surface)] rounded-3xl p-6 pb-8 border border-[var(--foreground-muted)]/10 shadow-2xl">
+            <h2 className="text-xl font-bold text-center mb-6 text-foreground">🔢 Matematik To'r</h2>
+            
+            <div className="bg-background p-4 rounded-xl mb-6 border border-[var(--foreground-muted)]/20">
+              <div className="text-4xl font-bold text-foreground mb-4">21</div>
+              <h3 className="text-foreground font-bold text-xl mb-2">Ko'rsatilgan javobga yetish uchun<br/>to'rdan raqamlarni tanlang</h3>
+              
+              {/* Mini Grid Visual */}
+              <div className="grid grid-cols-6 gap-1 w-full max-w-[200px] mx-auto opacity-50 mb-4">
+                {Array.from({ length: 18 }).map((_, i) => (
+                  <div key={i} className="aspect-square bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] rounded-sm text-[6px] flex items-center justify-center text-white">
+                    {Math.floor(Math.random()*9)+1}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <p className="text-[var(--foreground-muted)] text-sm mb-6 leading-relaxed px-4">
+              Yuqorida ko'rsatilgan javobga yetish uchun matematik to'rdan raqamlarni tanlang. Qanchalik ko'p to'g'ri yechsangiz, raqamlar kattalashadi.
+            </p>
+
+            <div className="flex flex-col gap-3 mb-8 px-8">
+              <div className="flex justify-between items-center">
+                <span className="text-foreground font-medium">+5 💎</span>
+                <span className="text-[var(--foreground-muted)] text-sm">to'g'ri javob uchun</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-foreground font-medium">❤️ → 💔</span>
+                <span className="text-[var(--foreground-muted)] text-sm">noto'g'ri javobda yurak sinadi</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-foreground font-medium">3 ❤️</span>
+                <span className="text-[var(--foreground-muted)] text-sm">barcha yuraklar sinsa, o'yin tugaydi</span>
+              </div>
+            </div>
+
+            <button 
+              onClick={startGame}
+              className="w-full py-4 rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold tracking-wide shadow-lg shadow-orange-900/20 active:scale-95 transition-transform uppercase text-sm"
+            >
+              Boshlash
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Finished
+  if (gamePhase === 'finished') {
+    return (
+      <div className="relative flex flex-col h-screen bg-background text-foreground p-4 max-w-md mx-auto overflow-hidden">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-full bg-[var(--surface)] rounded-3xl p-8 border border-[var(--foreground-muted)]/10 shadow-2xl text-center">
+            <div className="text-6xl mb-4">💔</div>
+            <h2 className="text-2xl font-bold mb-2 text-foreground">O'yin tugadi!</h2>
+            <p className="text-[var(--foreground-muted)] mb-4">Barcha yuraklar tugadi</p>
+            
+            <div className="bg-background rounded-2xl p-6 mb-6 border border-[var(--foreground-muted)]/20">
+              <div className="text-4xl font-bold text-foreground mb-2">💎 {Math.round(score)}</div>
+              <p className="text-sm text-[var(--foreground-muted)]">
+                Erishilgan daraja: {currentLevelIndex + 1}
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <button 
+                onClick={restartGame}
+                className="w-full py-4 rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold tracking-wide shadow-lg shadow-orange-900/20 active:scale-95 transition-transform"
+              >
+                Qayta o'ynash
+              </button>
+              <button 
+                onClick={handleBack}
+                className="w-full py-4 rounded-full text-[var(--foreground-muted)] font-medium active:scale-95 transition-transform"
+              >
+                Chiqish
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Playing
   return (
     <div className="relative flex flex-col h-screen bg-background text-foreground p-4 max-w-md mx-auto overflow-hidden font-sans">
       {/* Header */}
       <div className="relative z-30 flex items-center justify-between mb-4">
         <button
-          onClick={onBack}
+          onClick={handleBack}
           className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--surface)] text-foreground border border-[var(--foreground-muted)]/20 shadow-sm hover:scale-105 transition-all"
           aria-label="Back"
         >
@@ -212,34 +465,79 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
           </svg>
         </button>
 
-        <div className="flex items-center gap-2 text-xl font-bold text-foreground">
-          <span>💎</span>
-          <span>{Math.round(score)}</span>
+        {/* Hearts Display */}
+        <div className="flex items-center gap-1">
+          {Array.from({ length: MAX_HEARTS }).map((_, idx) => (
+            <span 
+              key={idx} 
+              className={`text-2xl transition-all duration-300 ${
+                idx < hearts 
+                  ? 'scale-100 opacity-100' 
+                  : 'scale-75 opacity-50 grayscale'
+              }`}
+            >
+              {idx < hearts ? '❤️' : '🖤'}
+            </span>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-4">
+          {/* Level Indicator */}
+          <div className="flex items-center gap-1">
+            {levels.map((_, idx) => (
+              <div 
+                key={idx}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  idx <= currentLevelIndex 
+                    ? 'bg-orange-500' 
+                    : 'bg-[var(--foreground-muted)]/30'
+                }`}
+              />
+            ))}
+          </div>
+          <div className="flex items-center gap-2 text-xl font-bold text-foreground">
+            <span>💎</span>
+            <span>{Math.round(score)}</span>
+          </div>
         </div>
       </div>
 
       {/* Target Display */}
-      <div className="flex flex-col items-center justify-center mb-8">
-        <button 
-          onClick={() => setIsTutorialOpen(true)}
-          className="text-xs font-bold text-[var(--foreground-muted)] tracking-widest mb-2 uppercase hover:text-foreground transition-colors cursor-pointer"
-        >
-          MATEMATIK TO'R ℹ
-        </button>
+      <div className="flex flex-col items-center justify-center mb-4">
+        <div className="text-xs font-bold text-[var(--foreground-muted)] tracking-widest mb-2 uppercase">
+          MATEMATIK TO'R
+        </div>
         <div className="text-6xl font-bold text-foreground mb-2 transition-all scale-110">{target}</div>
         {message && (
-            <div className={`text-lg font-bold ${message.includes('+') ? 'text-green-500' : 'text-red-500'} animate-pulse absolute top-32`}>
-                {message}
-            </div>
+          <div className={`text-lg font-bold ${message.includes('+') ? 'text-green-500' : 'text-red-500'} animate-pulse absolute top-32`}>
+            {message}
+          </div>
         )}
-         <div className="h-2 w-full max-w-[200px] bg-[var(--surface)] rounded-full mt-4 overflow-hidden border border-[var(--foreground-muted)]/20">
-            <div 
-                className="h-full bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] shadow-[0_0_12px_rgba(245,158,11,0.5)] transition-all duration-100 ease-linear"
-                style={{ width: `${(timeLeft / INITIAL_TIME) * 100}%` }}
-            />
+        <div className="h-2 w-full max-w-[200px] bg-[var(--surface)] rounded-full mt-4 overflow-hidden border border-[var(--foreground-muted)]/20">
+          <div 
+            className="h-full bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] shadow-[0_0_12px_rgba(245,158,11,0.5)] transition-all duration-100 ease-linear"
+            style={{ width: `${(timeLeft / INITIAL_TIME) * 100}%` }}
+          />
         </div>
       </div>
 
+      {/* Streak Progress */}
+      {currentLevelIndex < levels.length - 1 && (
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <div className="flex gap-1">
+            {Array.from({ length: CORRECT_STREAK_FOR_LEVEL_UP }).map((_, idx) => (
+              <div 
+                key={idx}
+                className={`w-3 h-3 rounded-full transition-all ${
+                  idx < correctStreak 
+                    ? 'bg-green-500 scale-110' 
+                    : 'bg-[var(--foreground-muted)]/20'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Grid */}
       <div className="grid grid-cols-6 gap-1 w-full aspect-square max-w-sm mx-auto bg-[var(--surface)]/50 p-2 rounded-xl border border-[var(--foreground-muted)]/20">
@@ -265,101 +563,8 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
       </div>
       
       <div className="mt-4 text-center text-[var(--foreground-muted)] text-sm">
-         Joriy yig'indi: <span className={`font-bold ${currentSum > target ? 'text-red-500' : 'text-foreground'}`}>{currentSum}</span>
+        Joriy yig'indi: <span className={`font-bold ${currentSum > target ? 'text-red-500' : 'text-foreground'}`}>{currentSum}</span>
       </div>
-
-      {/* Tutorial Modal */}
-      <div className={`fixed inset-0 z-50 flex items-end justify-center ${isTutorialOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
-        {/* Backdrop */}
-        <div 
-            className={`absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-300 ${isTutorialOpen ? 'opacity-100' : 'opacity-0'}`}
-            onClick={() => setIsTutorialOpen(false)}
-        />
-        
-        {/* Bottom Sheet */}
-        <div className={`relative z-10 w-full max-w-md bg-[var(--surface)] rounded-t-[2rem] p-6 pb-8 transition-transform duration-300 ease-out transform ${isTutorialOpen ? 'translate-y-0' : 'translate-y-full'} border-t border-[var(--foreground-muted)]/10 shadow-2xl`}>
-            {/* Handle */}
-            <div className="w-12 h-1 bg-[var(--foreground-muted)] rounded-full mx-auto mb-6 opacity-30" />
-            
-            <h2 className="text-xl font-bold text-center mb-6 text-foreground">Matematik To'r</h2>
-            
-            <div className="bg-background p-4 rounded-xl mb-6 border border-[var(--foreground-muted)]/20">
-                <div className="text-4xl font-bold text-foreground mb-4">{target || 21}</div>
-                <h3 className="text-foreground font-bold text-xl mb-2">Ko'rsatilgan javobga yetish uchun<br/>to'rdan raqamlarni tanlang</h3>
-                
-                {/* Mini Grid Visual */}
-                <div className="grid grid-cols-6 gap-1 w-full max-w-[200px] mx-auto opacity-50 mb-4">
-                    {Array.from({ length: 18 }).map((_, i) => (
-                        <div key={i} className="aspect-square bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] rounded-sm text-[6px] flex items-center justify-center text-white">
-                            {Math.floor(Math.random()*9)+1}
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            <p className="text-[var(--foreground-muted)] text-sm mb-6 leading-relaxed px-4">
-                Yuqorida ko'rsatilgan javobga yetish uchun matematik to'rdan raqamlarni tanlang. Yuqoridagi javobga yetish uchun istalgan raqamni tanlashingiz mumkin.
-            </p>
-
-            <div className="flex flex-col gap-3 mb-8 px-8">
-                <div className="flex justify-between items-center">
-                    <span className="text-foreground font-medium">5.0</span>
-                    <span className="text-[var(--foreground-muted)] text-sm">to'g'ri javob uchun</span>
-                </div>
-                <div className="flex justify-between items-center">
-                    <span className="text-foreground font-medium">-5.0</span>
-                    <span className="text-[var(--foreground-muted)] text-sm">noto'g'ri javob uchun</span>
-                </div>
-            </div>
-
-            <button 
-                onClick={() => {
-                  setIsTutorialOpen(false);
-                  if (isFirstLoad.current) {
-                    isFirstLoad.current = false;
-                    playTinTinSound();
-                  }
-                }}
-                className="w-full py-4 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold tracking-wide shadow-lg shadow-blue-900/20 active:scale-95 transition-transform uppercase text-sm"
-            >
-                Tushundim!
-            </button>
-        </div>
-      </div>
-
-      {/* Game Over / Pause Modal */}
-      {isGameOver && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/90 backdrop-blur-md">
-             <div className="bg-[var(--surface)] border border-[var(--foreground-muted)]/20 p-8 rounded-3xl w-full max-w-sm text-center">
-                <h2 className="text-3xl font-bold text-foreground mb-2">{timeLeft <= 0 ? "Vaqt tugadi!" : "To'xtatildi"}</h2>
-                <p className="text-xl text-[var(--foreground-muted)] mb-8">Ball: {score.toFixed(1)}</p>
-                
-                <div className="flex flex-col gap-3">
-                    {timeLeft > 0 && (
-                         <button 
-                            onClick={() => setIsGameOver(false)}
-                            className="w-full py-3 bg-[var(--surface)]/80 text-foreground border border-[var(--foreground-muted)]/20 font-bold rounded-full hover:bg-[var(--surface)] transition-colors"
-                        >
-                            Davom etish
-                        </button>
-                    )}
-                    <button 
-                        onClick={handleRestart}
-                        className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold rounded-full hover:opacity-90 transition-opacity shadow-lg shadow-orange-900/20"
-                    >
-                        Yangi o'yin
-                    </button>
-                    <button 
-                        onClick={onBack}
-                        className="w-full py-3 bg-transparent border border-[var(--foreground-muted)]/20 text-foreground font-bold rounded-full hover:bg-[var(--surface)]/50 transition-colors"
-                    >
-                        Chiqish
-                    </button>
-                </div>
-             </div>
-        </div>
-      )}
     </div>
   );
 }
-
