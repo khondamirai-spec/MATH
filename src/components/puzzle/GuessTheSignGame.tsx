@@ -138,7 +138,7 @@ export default function GuessTheSignGame({ onBack }: GuessTheSignGameProps) {
   const [score, setScore] = useState(0);
   const [hearts, setHearts] = useState(MAX_HEARTS);
   const [question, setQuestion] = useState<{ a: number; b: number; operator: string; result: number } | null>(null);
-  const [timeLeft, setTimeLeft] = useState(QUESTION_DURATION);
+  const [timeLeft, setTimeLeft] = useState(getQuestionDuration(1));
   const [correctStreak, setCorrectStreak] = useState(0);
   
   const isFirstLoad = useRef(true);

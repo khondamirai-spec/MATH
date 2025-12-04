@@ -183,7 +183,7 @@ export default function CorrectAnswerGame({ onBack }: CorrectAnswerGameProps) {
   
   const [score, setScore] = useState(0);
   const [hearts, setHearts] = useState(MAX_HEARTS);
-  const [timeLeft, setTimeLeft] = useState(QUESTION_DURATION);
+  const [timeLeft, setTimeLeft] = useState(getQuestionDuration(1));
   const [question, setQuestion] = useState<Question | null>(null);
   const [correctStreak, setCorrectStreak] = useState(0);
   
