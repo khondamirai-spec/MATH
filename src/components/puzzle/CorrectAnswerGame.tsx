@@ -5,11 +5,18 @@ import { initializeUserSession } from "@/lib/userSession";
 import { updateScoreAndGems, getMinigameIdByCode } from "@/lib/gamification";
 import { supabase } from "@/lib/supabase";
 
-const QUESTION_DURATION = 5; // seconds per question
-const CORRECT_STREAK_FOR_LEVEL_UP = 5;
+const BASE_QUESTION_DURATION = 5; // seconds per question
+const CORRECT_STREAK_FOR_LEVEL_UP = 7;
 const PROGRESS_INTERVAL = 100; // ms
 const PROGRESS_DECREMENT = PROGRESS_INTERVAL / 1000;
 const MAX_HEARTS = 3;
+
+// Dynamic timer based on level
+const getQuestionDuration = (level: number) => {
+  if (level === 1) return 7;
+  if (level === 2) return 5;
+  return 3.5; // Level 3+
+};
 
 // Heart break sound effect
 const playHeartBreakSound = () => {
@@ -58,14 +65,23 @@ const generateOptions = (correct: number, maxRange: number): number[] => {
   const options = new Set<number>();
   options.add(correct);
   
+  // Scale variance with difficulty - make options closer/harder
+  const baseVariance = maxRange <= 10 ? 3 : maxRange <= 100 ? 15 : 50;
+  const varianceMultiplier = maxRange <= 10 ? 1 : maxRange <= 100 ? 2 : 4;
+  
   while (options.size < 4) {
-    const variance = Math.floor(Math.random() * Math.min(10, maxRange / 2)) + 1;
+    const variance = Math.floor(Math.random() * baseVariance * varianceMultiplier) + 1;
     const sign = Math.random() > 0.5 ? 1 : -1;
     const val = correct + (variance * sign);
-    if (val >= 0 && !options.has(val)) {
+    
+    if (val >= 0 && val <= maxRange * 3 && !options.has(val)) {
       options.add(val);
-    } else if (val < 0) {
-      options.add(Math.floor(Math.random() * Math.min(20, maxRange)));
+    } else if (val < 0 || options.size < 4) {
+      // Generate a completely random option within reasonable range
+      const randomOption = Math.floor(Math.random() * Math.max(correct * 2, maxRange));
+      if (!options.has(randomOption) && randomOption >= 0) {
+        options.add(randomOption);
+      }
     }
   }
   
@@ -80,14 +96,18 @@ const buildQuestion = (minRange: number, maxRange: number): Question => {
   let b = Math.floor(Math.random() * (maxRange - minRange + 1)) + minRange;
   let result = 0;
 
-  // Adjust numbers to ensure integer results and reasonable difficulty
+  // Scale multiplier/divider caps based on range
+  const multDivCap = maxRange <= 10 ? 10 : maxRange <= 100 ? 30 : 75;
+
+  // Adjust numbers to ensure integer results and scale difficulty
   if (operator === "/") {
-    result = Math.floor(Math.random() * Math.min(maxRange / 2, 15)) + 1;
-    b = Math.max(1, Math.min(b, 12));
+    b = Math.max(1, Math.floor(Math.random() * Math.min(multDivCap, maxRange / 2)) + 1);
+    const maxResult = Math.min(Math.floor(maxRange / b), multDivCap);
+    result = Math.floor(Math.random() * maxResult) + 1;
     a = result * b;
   } else if (operator === "*") {
-    a = Math.floor(Math.random() * Math.min(maxRange, 12)) + minRange;
-    b = Math.floor(Math.random() * Math.min(maxRange, 12)) + minRange;
+    a = Math.floor(Math.random() * Math.min(multDivCap, maxRange)) + Math.max(1, minRange);
+    b = Math.floor(Math.random() * Math.min(multDivCap, maxRange)) + Math.max(1, minRange);
     result = a * b;
   } else if (operator === "+") {
     result = a + b;
@@ -258,7 +278,7 @@ export default function CorrectAnswerGame({ onBack }: CorrectAnswerGameProps) {
     if (!currentLevel) return;
     
     setQuestion(buildQuestion(currentLevel.number_range_min, currentLevel.number_range_max));
-    setTimeLeft(QUESTION_DURATION);
+    setTimeLeft(getQuestionDuration(currentLevel.level));
     hasAnswered.current = false;
     
     if (playSound) {
@@ -543,7 +563,7 @@ export default function CorrectAnswerGame({ onBack }: CorrectAnswerGameProps) {
       <div className="w-full h-2 bg-[var(--foreground-muted)]/20 rounded-full mb-4 overflow-hidden border border-cyan-500/30">
         <div 
           className="h-full bg-gradient-to-r from-slate-900 via-cyan-600 to-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.65)] transition-[width] duration-100 ease-linear" 
-          style={{ width: `${Math.min(100, (timeLeft / QUESTION_DURATION) * 100)}%` }}
+          style={{ width: `${Math.min(100, (timeLeft / getQuestionDuration(currentLevel?.level || 1)) * 100)}%` }}
         ></div>
       </div>
 

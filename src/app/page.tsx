@@ -229,6 +229,14 @@ export default function Home() {
         <div className="mt-8 text-xs text-[color:var(--foreground-muted)] opacity-50">
           User ID: <span className="font-mono select-all">{debugUserId || "Loading..."}</span>
         </div>
+
+        {/* Debug Link */}
+        <Link 
+          href="/debug-scores"
+          className="mt-4 text-sm text-purple-400 hover:text-purple-300 underline transition-colors"
+        >
+          🔍 View All Game Scores & Debug Info
+        </Link>
       </main>
     </div>
   );

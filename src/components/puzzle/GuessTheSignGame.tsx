@@ -5,11 +5,18 @@ import { initializeUserSession } from "@/lib/userSession";
 import { updateScoreAndGems, getMinigameIdByCode } from "@/lib/gamification";
 import { supabase } from "@/lib/supabase";
 
-const QUESTION_DURATION = 5;
-const CORRECT_STREAK_FOR_LEVEL_UP = 5;
+const BASE_QUESTION_DURATION = 5;
+const CORRECT_STREAK_FOR_LEVEL_UP = 7;
 const PROGRESS_INTERVAL = 100;
 const PROGRESS_DECREMENT = PROGRESS_INTERVAL / 1000;
 const MAX_HEARTS = 3;
+
+// Dynamic timer based on level
+const getQuestionDuration = (level: number) => {
+  if (level === 1) return 6;
+  if (level === 2) return 4;
+  return 3; // Level 3+
+};
 
 // Heart break sound effect
 const playHeartBreakSound = () => {
@@ -88,14 +95,18 @@ const buildEquation = (minRange: number, maxRange: number) => {
   let b = Math.floor(Math.random() * (maxRange - minRange + 1)) + minRange;
   let result = 0;
 
+  // Scale multiplier/divider caps based on range
+  const multDivCap = maxRange <= 10 ? 10 : maxRange <= 100 ? 25 : 50;
+
   if (operator === "/") {
-    // Ensure clean division
-    b = Math.max(1, Math.min(b, 12));
-    result = Math.floor(Math.random() * Math.min(maxRange / b, 15)) + 1;
+    // Ensure clean division, but scale with difficulty
+    b = Math.max(1, Math.floor(Math.random() * Math.min(multDivCap, maxRange / 2)) + 1);
+    const maxResult = Math.min(Math.floor(maxRange / b), multDivCap);
+    result = Math.floor(Math.random() * maxResult) + 1;
     a = result * b;
   } else if (operator === "*") {
-    a = Math.floor(Math.random() * Math.min(maxRange, 12)) + minRange;
-    b = Math.floor(Math.random() * Math.min(maxRange, 12)) + minRange;
+    a = Math.floor(Math.random() * Math.min(multDivCap, maxRange)) + minRange;
+    b = Math.floor(Math.random() * Math.min(multDivCap, maxRange)) + minRange;
     result = a * b;
   } else if (operator === "+") {
     result = a + b;
@@ -220,7 +231,7 @@ export default function GuessTheSignGame({ onBack }: GuessTheSignGameProps) {
     if (!currentLevel) return;
     
     setQuestion(buildEquation(currentLevel.number_range_min, currentLevel.number_range_max));
-    setTimeLeft(QUESTION_DURATION);
+    setTimeLeft(getQuestionDuration(currentLevel.level));
     hasAnswered.current = false;
     
     if (playSound) {
@@ -502,7 +513,7 @@ export default function GuessTheSignGame({ onBack }: GuessTheSignGameProps) {
       <div className="w-full h-2 bg-[var(--foreground-muted)]/20 rounded-full mb-4 overflow-hidden border border-blue-500/30">
         <div 
           className="h-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500 shadow-[0_0_12px_rgba(59,130,246,0.65)] transition-[width] duration-75 ease-linear" 
-          style={{ width: `${Math.max(0, Math.min(100, (timeLeft / QUESTION_DURATION) * 100))}%` }}
+          style={{ width: `${Math.max(0, Math.min(100, (timeLeft / getQuestionDuration(currentLevel?.level || 1)) * 100))}%` }}
         ></div>
       </div>
 
