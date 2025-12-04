@@ -73,11 +73,88 @@ const TRIANGLE_LINES = [
   { from: 5, to: 2 },
 ];
 
-const CORNER_SETS: Record<number, number[]> = {
-  9: [1, 2, 3],
-  10: [1, 3, 5],
-  11: [2, 4, 6],
-  12: [4, 5, 6],
+// Helper to generate a valid magic triangle solution
+// For 6 consecutive numbers starting at `min`: sum = 6*min + 15
+// Target formula: 3T = corners_sum + total_sum, so T = (corners_sum + total_sum) / 3
+// Valid corner sums must make (corners_sum + total_sum) divisible by 3
+const generateValidSolution = (min: number, max: number): { numbers: number[]; targetSum: number; solution: number[] } => {
+  // Use 6 consecutive numbers from the range
+  const rangeSize = max - min + 1;
+  const startOffset = rangeSize > 6 ? Math.floor(Math.random() * (rangeSize - 5)) : 0;
+  const baseMin = min + startOffset;
+  
+  const numbers = [baseMin, baseMin + 1, baseMin + 2, baseMin + 3, baseMin + 4, baseMin + 5];
+  const totalSum = numbers.reduce((a, b) => a + b, 0);
+  
+  // Find all valid corner combinations (sum divisible by 3 when added to totalSum)
+  const validCornerSets: number[][] = [];
+  
+  // Try all combinations of 3 numbers from our 6 as corners
+  for (let i = 0; i < 6; i++) {
+    for (let j = i + 1; j < 6; j++) {
+      for (let k = j + 1; k < 6; k++) {
+        const cornerSum = numbers[i] + numbers[j] + numbers[k];
+        if ((cornerSum + totalSum) % 3 === 0) {
+          validCornerSets.push([i, j, k]); // Store indices
+        }
+      }
+    }
+  }
+  
+  // Pick a random valid corner set
+  const chosenCornerIndices = validCornerSets[Math.floor(Math.random() * validCornerSets.length)];
+  const cornerValues = chosenCornerIndices.map(i => numbers[i]);
+  const midpointIndices = [0, 1, 2, 3, 4, 5].filter(i => !chosenCornerIndices.includes(i));
+  const midpointValues = midpointIndices.map(i => numbers[i]);
+  
+  const cornerSum = cornerValues.reduce((a, b) => a + b, 0);
+  const targetSum = (cornerSum + totalSum) / 3;
+  
+  // Now we need to assign corners to positions 0, 1, 2 and midpoints to 3, 4, 5
+  // Such that each side sums to targetSum
+  // Sides: [0,3,1], [0,4,2], [1,5,2]
+  // We'll try random permutations of corners until we find one that works
+  
+  const cornerPerms = [
+    [0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]
+  ];
+  
+  // Shuffle permutations for variety
+  const shuffledPerms = [...cornerPerms].sort(() => Math.random() - 0.5);
+  
+  for (const perm of shuffledPerms) {
+    const c0 = cornerValues[perm[0]]; // position 0 (top)
+    const c1 = cornerValues[perm[1]]; // position 1 (bottom-left)
+    const c2 = cornerValues[perm[2]]; // position 2 (bottom-right)
+    
+    // Calculate required midpoints
+    // Side [0,3,1]: c0 + m3 + c1 = T => m3 = T - c0 - c1
+    // Side [0,4,2]: c0 + m4 + c2 = T => m4 = T - c0 - c2
+    // Side [1,5,2]: c1 + m5 + c2 = T => m5 = T - c1 - c2
+    const m3 = targetSum - c0 - c1;
+    const m4 = targetSum - c0 - c2;
+    const m5 = targetSum - c1 - c2;
+    
+    // Check if these midpoints are exactly our available midpoint values
+    const requiredMidpoints = [m3, m4, m5].sort((a, b) => a - b);
+    const availableMidpoints = [...midpointValues].sort((a, b) => a - b);
+    
+    if (requiredMidpoints.every((v, i) => v === availableMidpoints[i])) {
+      // Valid solution found!
+      const solution = new Array(6);
+      solution[0] = c0;
+      solution[1] = c1;
+      solution[2] = c2;
+      solution[3] = m3;
+      solution[4] = m4;
+      solution[5] = m5;
+      
+      return { numbers, targetSum, solution };
+    }
+  }
+  
+  // Fallback (shouldn't happen with valid corner sets)
+  return generateValidSolution(min, max);
 };
 
 interface MagicTriangleGameProps {
@@ -98,6 +175,7 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
   const [availableNumbers, setAvailableNumbers] = useState<number[]>([1, 2, 3, 4, 5, 6]);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
   const [targetSum, setTargetSum] = useState(9);
+  const [currentSolution, setCurrentSolution] = useState<number[] | null>(null);
   const [score, setScore] = useState(0);
   const [hearts, setHearts] = useState(MAX_HEARTS);
   const [timeLeft, setTimeLeft] = useState(120);
@@ -191,14 +269,20 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
   };
 
   const generatePuzzle = useCallback(() => {
-    const possibleSums = [9, 10, 11, 12];
-    const newTarget = possibleSums[Math.floor(Math.random() * possibleSums.length)];
+    // Use level configuration to determine number range
+    const min = currentLevel?.number_range_min ?? 1;
+    const max = currentLevel?.number_range_max ?? 6;
+    
+    // Generate a guaranteed solvable puzzle
+    const { numbers, targetSum: newTarget, solution } = generateValidSolution(min, max);
+    
     setTargetSum(newTarget);
+    setCurrentSolution(solution);
     setNodes(INITIAL_POSITIONS.map((p) => ({ ...p, value: null })));
-    setAvailableNumbers([1, 2, 3, 4, 5, 6]);
+    setAvailableNumbers([...numbers].sort((a, b) => a - b));
     setSelectedNumber(null);
     setIsWin(false);
-  }, []);
+  }, [currentLevel]);
 
   const checkSolution = useCallback((currentNodes: NodePosition[]) => {
     if (currentNodes.some((n) => n.value === null)) return false;
@@ -269,13 +353,22 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
     if (node.value !== null) {
       const valueToReturn = node.value;
       setNodes((prev) => prev.map((n) => (n.id === nodeId ? { ...n, value: null } : n)));
-      setAvailableNumbers((prev) => [...prev, valueToReturn].sort((a, b) => a - b));
+      // Add back to available numbers in sorted order
+      setAvailableNumbers((prev) => {
+        const newArr = [...prev, valueToReturn];
+        return newArr.sort((a, b) => a - b);
+      });
+      // If clicked number was selected, deselect it
+      if (selectedNumber === valueToReturn) {
+        setSelectedNumber(null);
+      }
       return;
     }
 
     if (selectedNumber !== null && node.value === null) {
       const newNodes = nodes.map((n) => n.id === nodeId ? { ...n, value: selectedNumber } : n);
       setNodes(newNodes);
+      // Remove from available numbers
       setAvailableNumbers((prev) => prev.filter((n) => n !== selectedNumber));
       setSelectedNumber(null);
 
@@ -338,8 +431,8 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
             <h2 className="text-xl font-bold text-center mb-4 text-foreground">🔺 Sehrli Uchburchak</h2>
             
             <div className="bg-background p-4 rounded-xl mb-4 border border-[var(--foreground-muted)]/20">
-              <div className="text-4xl font-bold text-foreground mb-3">{targetSum}</div>
-              <h3 className="text-foreground font-bold text-lg mb-2">1-6 raqamlarini uchburchakka joylashtiring</h3>
+              <div className="text-4xl font-bold text-foreground mb-3">🎯</div>
+              <h3 className="text-foreground font-bold text-lg mb-2">6 ta raqamni uchburchakka joylashtiring</h3>
               
               <div className="relative w-24 h-24 mx-auto my-4">
                 <svg className="w-full h-full" viewBox="0 0 100 100">
@@ -359,7 +452,7 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
             </div>
 
             <p className="text-[var(--foreground-muted)] text-sm mb-4 leading-relaxed px-2">
-              Har bir tomon yig'indisi <span className="text-[#c026d3] font-bold">{targetSum}</span> bo'ladigan qilib joylashtiring. Qanchalik ko'p to'g'ri yechsangiz, qiyinlashadi.
+              Har bir tomon yig'indisi <span className="text-[#c026d3] font-bold">maqsad raqamiga</span> teng bo'ladigan qilib joylashtiring. Daraja oshgani sari raqamlar kattaroq bo'ladi.
             </p>
 
             <div className="flex flex-col gap-2 mb-6 px-8">
@@ -512,18 +605,16 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
 
       <div className="mt-auto">
         <div className="grid grid-cols-3 gap-3 max-w-[280px] mx-auto">
-          {[1, 2, 3, 4, 5, 6].map((num) => {
-            const isAvailable = availableNumbers.includes(num);
+          {availableNumbers.map((num) => {
             const isSelected = selectedNumber === num;
             return (
               <button
                 key={num}
-                onClick={() => isAvailable && handleNumberSelect(num)}
-                disabled={!isAvailable}
+                onClick={() => handleNumberSelect(num)}
                 className={`h-16 rounded-2xl text-2xl font-bold transition-all duration-200
-                  ${!isAvailable ? 'opacity-0 pointer-events-none' : isSelected ? 'bg-[#6d28d9] text-white scale-95 shadow-[0_0_25px_rgba(109,40,217,0.5)] border-2 border-[#c026d3]' : 'bg-transparent border-2 border-[#6d28d9]/60 text-[#c026d3] hover:border-[#c026d3] hover:text-[#6d28d9] active:scale-95'}`}
+                  ${isSelected ? 'bg-[#6d28d9] text-white scale-95 shadow-[0_0_25px_rgba(109,40,217,0.5)] border-2 border-[#c026d3]' : 'bg-transparent border-2 border-[#6d28d9]/60 text-[#c026d3] hover:border-[#c026d3] hover:text-[#6d28d9] active:scale-95'}`}
               >
-                {isAvailable ? num : ''}
+                {num}
               </button>
             );
           })}

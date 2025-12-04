@@ -9,33 +9,6 @@ const INITIAL_TIME = 60;
 const GRID_SIZE = 6;
 const TOTAL_CELLS = 36;
 const CORRECT_STREAK_FOR_LEVEL_UP = 3;
-const MAX_HEARTS = 3;
-
-// Heart break sound effect
-const playHeartBreakSound = () => {
-  try {
-    const audioContext = new (window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.3);
-    oscillator.type = 'sawtooth';
-    
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-    
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.3);
-    
-    setTimeout(() => audioContext.close(), 400);
-  } catch {
-    // Audio not supported
-  }
-};
 
 // Level configuration from Supabase
 interface LevelConfig {
@@ -103,7 +76,6 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
   const [target, setTarget] = useState(0);
   const [currentSum, setCurrentSum] = useState(0);
   const [score, setScore] = useState(0);
-  const [hearts, setHearts] = useState(MAX_HEARTS);
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
   const [message, setMessage] = useState<string | null>(null);
   const [correctStreak, setCorrectStreak] = useState(0);
@@ -224,15 +196,8 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 0) {
-          playHeartBreakSound();
-          setHearts((h) => {
-            const newHearts = h - 1;
-            if (newHearts <= 0) {
-              setTimeout(() => setGamePhase('finished'), 500);
-            }
-            return newHearts;
-          });
-          return INITIAL_TIME; // Reset timer
+          setTimeout(() => setGamePhase('finished'), 100);
+          return 0;
         }
         return prev - 0.1;
       });
@@ -304,16 +269,8 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
         playTinTinSound();
       }, 200);
     } else if (newSum > target) {
-      // Wrong! - lose a heart
-      playHeartBreakSound();
-      setHearts((h) => {
-        const newHearts = h - 1;
-        if (newHearts <= 0) {
-          setTimeout(() => setGamePhase('finished'), 500);
-        }
-        return newHearts;
-      });
-      setMessage("💔");
+      // Wrong! - just reset selection
+      setMessage("❌");
       setCorrectStreak(0);
 
       setTimeout(() => {
@@ -340,7 +297,6 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
 
   const restartGame = () => {
     setScore(0);
-    setHearts(MAX_HEARTS);
     setTimeLeft(INITIAL_TIME);
     setCorrectStreak(0);
     setCurrentLevelIndex(0);
@@ -392,12 +348,8 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
                 <span className="text-[var(--foreground-muted)] text-sm">to'g'ri javob uchun</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">❤️ → 💔</span>
-                <span className="text-[var(--foreground-muted)] text-sm">noto'g'ri javobda yurak sinadi</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">3 ❤️</span>
-                <span className="text-[var(--foreground-muted)] text-sm">barcha yuraklar sinsa, o'yin tugaydi</span>
+                <span className="text-foreground font-medium">⏱️ 60s</span>
+                <span className="text-[var(--foreground-muted)] text-sm">vaqt tugaganda o'yin tugaydi</span>
               </div>
             </div>
 
@@ -419,9 +371,9 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
       <div className="relative flex flex-col h-screen bg-background text-foreground p-4 max-w-md mx-auto overflow-hidden">
         <div className="flex-1 flex items-center justify-center">
           <div className="w-full bg-[var(--surface)] rounded-3xl p-8 border border-[var(--foreground-muted)]/10 shadow-2xl text-center">
-            <div className="text-6xl mb-4">💔</div>
-            <h2 className="text-2xl font-bold mb-2 text-foreground">O'yin tugadi!</h2>
-            <p className="text-[var(--foreground-muted)] mb-4">Barcha yuraklar tugadi</p>
+            <div className="text-6xl mb-4">⏱️</div>
+            <h2 className="text-2xl font-bold mb-2 text-foreground">Vaqt tugadi!</h2>
+            <p className="text-[var(--foreground-muted)] mb-4">O'yin yakunlandi</p>
             
             <div className="bg-background rounded-2xl p-6 mb-6 border border-[var(--foreground-muted)]/20">
               <div className="text-4xl font-bold text-foreground mb-2">💎 {Math.round(score)}</div>
@@ -464,22 +416,6 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
             <path d="M15 18l-6-6 6-6" />
           </svg>
         </button>
-
-        {/* Hearts Display */}
-        <div className="flex items-center gap-1 ml-8">
-          {Array.from({ length: MAX_HEARTS }).map((_, idx) => (
-            <span 
-              key={idx} 
-              className={`text-2xl transition-all duration-300 ${
-                idx < hearts 
-                  ? 'scale-100 opacity-100' 
-                  : 'scale-75 opacity-50 grayscale'
-              }`}
-            >
-              {idx < hearts ? '❤️' : '🖤'}
-            </span>
-          ))}
-        </div>
 
         <div className="flex items-center gap-4">
           {/* Level Indicator */}

@@ -8,33 +8,6 @@ import { supabase } from "@/lib/supabase";
 const INITIAL_TIME = 60;
 const PROGRESS_INTERVAL = 100;
 const CORRECT_STREAK_FOR_LEVEL_UP = 4;
-const MAX_HEARTS = 3;
-
-// Heart break sound effect
-const playHeartBreakSound = () => {
-  try {
-    const audioContext = new (window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.3);
-    oscillator.type = 'sawtooth';
-    
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-    
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.3);
-    
-    setTimeout(() => audioContext.close(), 400);
-  } catch {
-    // Audio not supported
-  }
-};
 
 // Level configuration from Supabase
 interface LevelConfig {
@@ -129,7 +102,6 @@ export default function MathPairsGame({ onBack }: MathPairsGameProps) {
   
   const [cards, setCards] = useState<Card[]>([]);
   const [score, setScore] = useState(0);
-  const [hearts, setHearts] = useState(MAX_HEARTS);
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -227,15 +199,8 @@ export default function MathPairsGame({ onBack }: MathPairsGameProps) {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 0) {
-          playHeartBreakSound();
-          setHearts((h) => {
-            const newHearts = h - 1;
-            if (newHearts <= 0) {
-              setTimeout(() => setGamePhase('finished'), 500);
-            }
-            return newHearts;
-          });
-          return INITIAL_TIME;
+          setTimeout(() => setGamePhase('finished'), 100);
+          return 0;
         }
         return prev - (PROGRESS_INTERVAL / 1000);
       });
@@ -294,14 +259,6 @@ export default function MathPairsGame({ onBack }: MathPairsGameProps) {
           setCards(current => current.map(c => 
             (c.id === id1 || c.id === id2) ? { ...c, state: "hidden" } : c
           ));
-          playHeartBreakSound();
-          setHearts(h => {
-            const newHearts = h - 1;
-            if (newHearts <= 0) {
-              setTimeout(() => setGamePhase('finished'), 500);
-            }
-            return newHearts;
-          });
           setCorrectStreak(0);
           setSelectedIds([]);
           setIsProcessing(false);
@@ -333,7 +290,6 @@ export default function MathPairsGame({ onBack }: MathPairsGameProps) {
 
   const restartGame = () => {
     setScore(0);
-    setHearts(MAX_HEARTS);
     setTimeLeft(INITIAL_TIME);
     setCorrectStreak(0);
     setCurrentLevelIndex(0);
@@ -396,12 +352,8 @@ export default function MathPairsGame({ onBack }: MathPairsGameProps) {
                 <span className="text-[var(--foreground-muted)] text-sm">mos kelganda</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">❤️ → 💔</span>
-                <span className="text-[var(--foreground-muted)] text-sm">mos kelmaganda yurak sinadi</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">3 ❤️</span>
-                <span className="text-[var(--foreground-muted)] text-sm">barcha yuraklar sinsa, o'yin tugaydi</span>
+                <span className="text-foreground font-medium">⏱️ 60s</span>
+                <span className="text-[var(--foreground-muted)] text-sm">vaqt tugaganda o'yin tugaydi</span>
               </div>
             </div>
 
@@ -422,9 +374,9 @@ export default function MathPairsGame({ onBack }: MathPairsGameProps) {
     return (
       <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/90 backdrop-blur-md animate-in fade-in">
         <div className="w-full max-w-md bg-[var(--surface)] rounded-3xl p-8 border border-[var(--foreground-muted)]/10 shadow-2xl text-center mx-4">
-          <div className="text-6xl mb-4">💔</div>
-          <h2 className="text-2xl font-bold mb-2 text-foreground">O'yin tugadi!</h2>
-          <p className="text-[var(--foreground-muted)] mb-4">Barcha yuraklar tugadi</p>
+          <div className="text-6xl mb-4">⏱️</div>
+          <h2 className="text-2xl font-bold mb-2 text-foreground">Vaqt tugadi!</h2>
+          <p className="text-[var(--foreground-muted)] mb-4">O'yin yakunlandi</p>
           
           <div className="bg-background rounded-2xl p-6 mb-6 border border-[var(--foreground-muted)]/20">
             <div className="text-4xl font-bold text-foreground mb-2">💎 {score}</div>
@@ -466,22 +418,6 @@ export default function MathPairsGame({ onBack }: MathPairsGameProps) {
             <path d="M15 18l-6-6 6-6" />
           </svg>
         </button>
-
-        {/* Hearts Display */}
-        <div className="flex items-center gap-1 ml-8">
-          {Array.from({ length: MAX_HEARTS }).map((_, idx) => (
-            <span 
-              key={idx} 
-              className={`text-2xl transition-all duration-300 ${
-                idx < hearts 
-                  ? 'scale-100 opacity-100' 
-                  : 'scale-75 opacity-50 grayscale'
-              }`}
-            >
-              {idx < hearts ? '❤️' : '🖤'}
-            </span>
-          ))}
-        </div>
 
         <div className="flex items-center gap-4">
           {/* Level Indicator */}

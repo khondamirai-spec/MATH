@@ -13,6 +13,7 @@ export interface UserWallet {
 }
 
 // Mapping of game names to minigame codes
+// NOTE: These names MUST match the frontend page titles AND the minigames.name in database
 export const GAME_NAME_TO_CODE: Record<string, string> = {
   "Kalkulyator": "calculator",
   "Belgini top": "find_operator",
@@ -20,11 +21,11 @@ export const GAME_NAME_TO_CODE: Record<string, string> = {
   "Tez hisoblash": "fast_calc",
   "Og'zaki hisob": "mental_sequence",
   "Juftlikni top": "matching_cards",
-  "Mantiqiy to'r": "math_grid",
+  "Tez plitalar": "math_grid",
   "Kvadrat ildiz": "square_root",
-  "Rasm Boshqotirma": "picture_equation",
-  "Sehrli Uchburchak": "magic_triangle",
-  "Raqamli Piramida": "number_pyramid",
+  "Kunlik vazifa": "picture_equation",
+  "Mantiqiy to'r": "magic_triangle",
+  "Tez fikrlash": "number_pyramid",
 };
 
 /**
