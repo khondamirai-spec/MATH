@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { initializeUserSession } from "@/lib/userSession";
-import { updateScoreAndGems, getGameIdByName } from "@/lib/gamification";
+import { updateScoreAndGems, getMinigameIdByCode } from "@/lib/gamification";
 import { supabase } from "@/lib/supabase";
 
 const QUESTION_DURATION = 5; // seconds per question
@@ -231,9 +231,9 @@ export default function CorrectAnswerGame({ onBack }: CorrectAnswerGameProps) {
       try {
         const userId = await initializeUserSession('math');
         if (userId) {
-          const gameId = await getGameIdByName("To'g'ri javob");
-          if (gameId) {
-            await updateScoreAndGems(userId, gameId, score);
+          const minigameId = await getMinigameIdByCode("missing_number");
+          if (minigameId) {
+            await updateScoreAndGems(userId, minigameId, score);
           }
         }
       } catch (error) {
@@ -364,7 +364,7 @@ export default function CorrectAnswerGame({ onBack }: CorrectAnswerGameProps) {
     return (
       <div className="relative flex flex-col h-screen bg-background text-foreground p-4 max-w-md mx-auto overflow-hidden">
         <div className="flex-1 flex items-center justify-center">
-          <div className="animate-spin w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full"></div>
+          <div className="animate-spin w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full"></div>
         </div>
       </div>
     );
@@ -390,7 +390,7 @@ export default function CorrectAnswerGame({ onBack }: CorrectAnswerGameProps) {
               </div>
               
               <div className="w-full h-1 bg-[var(--foreground-muted)]/20 rounded-full mb-4 overflow-hidden">
-                <div className="h-full w-3/4 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500"></div>
+                <div className="h-full w-3/4 bg-gradient-to-r from-slate-900 via-cyan-600 to-cyan-400"></div>
               </div>
               
               {/* Sample Equation Display */}
@@ -409,7 +409,7 @@ export default function CorrectAnswerGame({ onBack }: CorrectAnswerGameProps) {
                 {[5, 3, 8, 6].map((num) => (
                   <div 
                     key={num}
-                    className="aspect-square rounded-lg bg-gradient-to-br from-purple-600 to-pink-700 text-white text-sm font-bold flex items-center justify-center shadow-sm"
+                    className="aspect-square rounded-lg bg-gradient-to-br from-slate-900 via-cyan-600 to-cyan-400 text-white text-sm font-bold flex items-center justify-center shadow-sm"
                   >
                     {num}
                   </div>
@@ -440,7 +440,7 @@ export default function CorrectAnswerGame({ onBack }: CorrectAnswerGameProps) {
 
             <button 
               onClick={startGame}
-              className="w-full py-4 rounded-full bg-gradient-to-r from-purple-600 to-pink-700 text-white font-bold tracking-wide shadow-lg shadow-purple-900/20 active:scale-95 transition-transform uppercase text-sm"
+              className="w-full py-4 rounded-full bg-gradient-to-r from-slate-900 via-cyan-600 to-cyan-400 text-white font-bold tracking-wide shadow-lg shadow-cyan-900/30 active:scale-95 transition-transform uppercase text-sm"
             >
               Boshlash
             </button>
@@ -470,7 +470,7 @@ export default function CorrectAnswerGame({ onBack }: CorrectAnswerGameProps) {
             <div className="flex flex-col gap-3">
               <button 
                 onClick={restartGame}
-                className="w-full py-4 rounded-full bg-gradient-to-r from-purple-600 to-pink-700 text-white font-bold tracking-wide shadow-lg shadow-purple-900/20 active:scale-95 transition-transform"
+                className="w-full py-4 rounded-full bg-gradient-to-r from-slate-900 via-cyan-600 to-cyan-400 text-white font-bold tracking-wide shadow-lg shadow-cyan-900/30 active:scale-95 transition-transform"
               >
                 Qayta o'ynash
               </button>
@@ -503,7 +503,7 @@ export default function CorrectAnswerGame({ onBack }: CorrectAnswerGameProps) {
         </button>
 
         {/* Hearts Display */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 ml-8">
           {Array.from({ length: MAX_HEARTS }).map((_, idx) => (
             <span 
               key={idx} 
@@ -526,7 +526,7 @@ export default function CorrectAnswerGame({ onBack }: CorrectAnswerGameProps) {
                 key={idx}
                 className={`w-2 h-2 rounded-full transition-all ${
                   idx <= currentLevelIndex 
-                    ? 'bg-purple-500' 
+                    ? 'bg-cyan-500' 
                     : 'bg-[var(--foreground-muted)]/30'
                 }`}
               />
@@ -540,9 +540,9 @@ export default function CorrectAnswerGame({ onBack }: CorrectAnswerGameProps) {
       </div>
 
       {/* Timer Bar */}
-      <div className="w-full h-2 bg-[var(--foreground-muted)]/20 rounded-full mb-4 overflow-hidden border border-purple-500/30">
+      <div className="w-full h-2 bg-[var(--foreground-muted)]/20 rounded-full mb-4 overflow-hidden border border-cyan-500/30">
         <div 
-          className="h-full bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 shadow-[0_0_12px_rgba(168,85,247,0.65)] transition-[width] duration-100 ease-linear" 
+          className="h-full bg-gradient-to-r from-slate-900 via-cyan-600 to-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.65)] transition-[width] duration-100 ease-linear" 
           style={{ width: `${Math.min(100, (timeLeft / QUESTION_DURATION) * 100)}%` }}
         ></div>
       </div>
@@ -589,7 +589,7 @@ export default function CorrectAnswerGame({ onBack }: CorrectAnswerGameProps) {
           <button
             key={i}
             onClick={() => handleOptionClick(option)}
-            className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-purple-600 to-pink-700 hover:from-purple-500 hover:to-pink-600 text-white text-3xl font-semibold shadow-lg shadow-purple-900/20 active:scale-95 transition-transform flex items-center justify-center"
+            className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-slate-900 via-cyan-600 to-cyan-400 hover:from-slate-800 hover:via-cyan-500 hover:to-cyan-300 text-white text-3xl font-semibold shadow-lg shadow-cyan-900/30 active:scale-95 transition-transform flex items-center justify-center"
           >
             {option}
           </button>

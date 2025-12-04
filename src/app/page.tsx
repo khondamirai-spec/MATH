@@ -34,12 +34,42 @@ export default function Home() {
       {/* Header */}
       <header className="flex w-full items-center justify-between px-6 py-5">
         {/* Trophy Badge */}
-        <div className="trophy-badge flex items-center gap-2 rounded-full px-4 py-2">
-          <span className="text-xl">💎</span>
-          <span className="text-lg font-semibold text-[color:var(--foreground)]">
-            {points}
-          </span>
-        </div>
+        <Link href="/ustoz-coin" title="Transfer Gems to Ustoz Coin">
+          <div className="trophy-badge group flex items-center gap-2 rounded-full px-4 py-2 cursor-pointer transition-all active:scale-95 relative overflow-hidden ring-1 ring-white/10 hover:ring-purple-500/50">
+            {/* Shimmer effect */}
+            <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/5 to-transparent z-0"></div>
+            
+            <span className="text-xl relative z-10">💎</span>
+            <span className="text-lg font-semibold text-[color:var(--foreground)] relative z-10">
+              {points}
+            </span>
+            
+            {/* Vertical Divider */}
+            <div className="h-5 w-[1px] bg-white/10 mx-1 relative z-10"></div>
+
+            {/* Transfer Text - Always Visible */}
+            <div className="relative z-10 flex items-center gap-1">
+              <span className="text-xs font-bold text-purple-400 uppercase tracking-wider">
+                Transfer
+              </span>
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="14" 
+                height="14" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+                className="text-purple-400"
+              >
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
+            </div>
+          </div>
+        </Link>
       </header>
 
       {/* Main Content */}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { initializeUserSession } from "@/lib/userSession";
-import { updateScoreAndGems, getGameIdByName } from "@/lib/gamification";
+import { updateScoreAndGems, getMinigameIdByCode } from "@/lib/gamification";
 import { supabase } from "@/lib/supabase";
 
 const DISPLAY_DURATION = 2000;
@@ -214,9 +214,9 @@ export default function MentalArithmeticGame({ onBack }: MentalArithmeticGamePro
       try {
         const userId = await initializeUserSession('math');
         if (userId) {
-          const gameId = await getGameIdByName("Og'zaki hisob");
-          if (gameId) {
-            await updateScoreAndGems(userId, gameId, score);
+          const minigameId = await getMinigameIdByCode("mental_sequence");
+          if (minigameId) {
+            await updateScoreAndGems(userId, minigameId, score);
           }
         }
       } catch (error) {
@@ -456,7 +456,7 @@ export default function MentalArithmeticGame({ onBack }: MentalArithmeticGamePro
         </button>
 
         {/* Hearts Display */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 ml-8">
           {Array.from({ length: MAX_HEARTS }).map((_, idx) => (
             <span 
               key={idx} 

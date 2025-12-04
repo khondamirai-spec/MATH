@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { initializeUserSession } from "@/lib/userSession";
-import { updateScoreAndGems, getGameIdByName } from "@/lib/gamification";
+import { updateScoreAndGems, getMinigameIdByCode } from "@/lib/gamification";
 import { supabase } from "@/lib/supabase";
 
 const QUESTION_DURATION = 5;
@@ -193,9 +193,9 @@ export default function GuessTheSignGame({ onBack }: GuessTheSignGameProps) {
       try {
         const userId = await initializeUserSession('math');
         if (userId) {
-          const gameId = await getGameIdByName("Belgini top");
-          if (gameId) {
-            await updateScoreAndGems(userId, gameId, score);
+          const minigameId = await getMinigameIdByCode("find_operator");
+          if (minigameId) {
+            await updateScoreAndGems(userId, minigameId, score);
           }
         }
       } catch (error) {
@@ -462,7 +462,7 @@ export default function GuessTheSignGame({ onBack }: GuessTheSignGameProps) {
         </button>
 
         {/* Hearts Display */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 ml-8">
           {Array.from({ length: MAX_HEARTS }).map((_, idx) => (
             <span 
               key={idx} 

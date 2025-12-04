@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { initializeUserSession } from "@/lib/userSession";
-import { updateScoreAndGems, getGameIdByName } from "@/lib/gamification";
+import { updateScoreAndGems, getMinigameIdByCode } from "@/lib/gamification";
 import { supabase } from "@/lib/supabase";
 
 const QUESTION_DURATION = 5;
@@ -195,9 +195,9 @@ export default function SquareRootGame({ onBack }: SquareRootGameProps) {
       try {
         const userId = await initializeUserSession('math');
         if (userId) {
-          const gameId = await getGameIdByName("Kvadrat ildiz");
-          if (gameId) {
-            await updateScoreAndGems(userId, gameId, score);
+          const minigameId = await getMinigameIdByCode("square_root");
+          if (minigameId) {
+            await updateScoreAndGems(userId, minigameId, score);
           }
         }
       } catch (error) {
@@ -440,7 +440,7 @@ export default function SquareRootGame({ onBack }: SquareRootGameProps) {
         </button>
 
         {/* Hearts Display */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 ml-8">
           {Array.from({ length: MAX_HEARTS }).map((_, idx) => (
             <span 
               key={idx} 

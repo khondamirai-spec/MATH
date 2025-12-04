@@ -2,7 +2,7 @@ import { supabase } from './supabase';
 
 export interface GameProgress {
   user_id: string;
-  game_id: number;
+  minigame_id: string;
   highest_score: number;
   last_updated: string;
 }
@@ -11,6 +11,21 @@ export interface UserWallet {
   user_id: string;
   total_gems: number;
 }
+
+// Mapping of game names to minigame codes
+export const GAME_NAME_TO_CODE: Record<string, string> = {
+  "Kalkulyator": "calculator",
+  "Belgini top": "find_operator",
+  "To'g'ri javob": "missing_number",
+  "Tez hisoblash": "fast_calc",
+  "Og'zaki hisob": "mental_sequence",
+  "Juftlikni top": "matching_cards",
+  "Mantiqiy to'r": "math_grid",
+  "Kvadrat ildiz": "square_root",
+  "Rasm Boshqotirma": "picture_equation",
+  "Sehrli Uchburchak": "magic_triangle",
+  "Raqamli Piramida": "number_pyramid",
+};
 
 /**
  * Updates the user's score and calculates earned gems based on the new record.
@@ -21,19 +36,19 @@ export interface UserWallet {
  * - Otherwise: Earn 0 gems.
  * 
  * @param userId - The UUID of the user
- * @param gameId - The ID of the mini-game
+ * @param minigameId - The UUID of the minigame
  * @param newScore - The score achieved in the current game
  * @returns The amount of gems earned
  */
 export async function updateScoreAndGems(
   userId: string,
-  gameId: number,
+  minigameId: string,
   newScore: number
 ): Promise<number> {
   try {
     const { data, error } = await supabase.rpc('update_score_and_gems', {
       p_user_id: userId,
-      p_game_id: gameId,
+      p_minigame_id: minigameId,
       p_new_score: newScore,
     });
 
@@ -80,7 +95,7 @@ export async function getUserGameRecords(userId: string): Promise<Record<string,
     .from('user_game_progress')
     .select(`
       highest_score,
-      mini_games (
+      minigames (
         name
       )
     `)
@@ -93,23 +108,28 @@ export async function getUserGameRecords(userId: string): Promise<Record<string,
 
   const records: Record<string, number> = {};
   data?.forEach((item: any) => {
-    if (item.mini_games?.name) {
-      records[item.mini_games.name] = item.highest_score;
+    if (item.minigames?.name) {
+      records[item.minigames.name] = item.highest_score;
     }
   });
   
   return records;
 }
 
-export async function getGameIdByName(name: string): Promise<number | null> {
+/**
+ * Fetches a minigame ID by its code.
+ * @param code - The code of the minigame (e.g., 'calculator', 'find_operator')
+ * @returns The UUID of the minigame or null if not found
+ */
+export async function getMinigameIdByCode(code: string): Promise<string | null> {
   const { data, error } = await supabase
-    .from('mini_games')
+    .from('minigames')
     .select('id')
-    .eq('name', name)
+    .eq('code', code)
     .single();
 
   if (error || !data) {
-    console.error('Error fetching game ID:', error);
+    console.error('Error fetching minigame ID:', error);
     return null;
   }
 

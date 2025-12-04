@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { initializeUserSession } from "@/lib/userSession";
-import { updateScoreAndGems, getGameIdByName } from "@/lib/gamification";
+import { updateScoreAndGems, getMinigameIdByCode } from "@/lib/gamification";
 import { supabase } from "@/lib/supabase";
 
 const ROWS = 4;
@@ -171,9 +171,9 @@ export default function NumberPyramidGame({ onBack }: NumberPyramidGameProps) {
       try {
         const userId = await initializeUserSession('math');
         if (userId) {
-          const gameId = await getGameIdByName("Raqamli Piramida");
-          if (gameId) {
-            await updateScoreAndGems(userId, gameId, score);
+          const minigameId = await getMinigameIdByCode("number_pyramid");
+          if (minigameId) {
+            await updateScoreAndGems(userId, minigameId, score);
           }
         }
       } catch (error) {
@@ -458,7 +458,7 @@ export default function NumberPyramidGame({ onBack }: NumberPyramidGameProps) {
         </button>
 
         {/* Hearts Display */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 ml-8">
           {Array.from({ length: MAX_HEARTS }).map((_, idx) => (
             <span 
               key={idx} 
