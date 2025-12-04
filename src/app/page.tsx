@@ -230,13 +230,6 @@ export default function Home() {
           User ID: <span className="font-mono select-all">{debugUserId || "Loading..."}</span>
         </div>
 
-        {/* Debug Link */}
-        <Link 
-          href="/debug-scores"
-          className="mt-4 text-sm text-purple-400 hover:text-purple-300 underline transition-colors"
-        >
-          🔍 View All Game Scores & Debug Info
-        </Link>
       </main>
     </div>
   );
