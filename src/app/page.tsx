@@ -77,7 +77,7 @@ export default function Home() {
         {/* Title Section */}
         <div className="mb-12 text-center">
           <h1 className="mb-3 text-4xl font-bold tracking-tight text-[color:var(--foreground)] md:text-5xl">
-            Logika AI
+            Matematika
           </h1>
           <p className="text-base text-[color:var(--foreground-muted)] md:text-lg">
             Miyangni charxla va Logikangni oshir !

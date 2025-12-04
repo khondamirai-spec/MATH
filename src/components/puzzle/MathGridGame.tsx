@@ -246,9 +246,9 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
     // Check logic
     if (newSum === target) {
       // Correct!
-      const scoreToAdd = 5;
+      const scoreToAdd = 1;
       setScore((s) => s + scoreToAdd);
-      setMessage("+5.0");
+      setMessage("+1 💎");
       
       const newStreak = correctStreak + 1;
       setCorrectStreak(newStreak);
@@ -344,7 +344,7 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
 
             <div className="flex flex-col gap-3 mb-8 px-8">
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">+5 💎</span>
+                <span className="text-foreground font-medium">+1 💎</span>
                 <span className="text-[var(--foreground-muted)] text-sm">to'g'ri javob uchun</span>
               </div>
               <div className="flex justify-between items-center">

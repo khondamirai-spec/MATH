@@ -308,7 +308,7 @@ export default function NumberPyramidGame({ onBack }: NumberPyramidGameProps) {
     const allCorrect = pyramid.every(c => c.isFixed || parseInt(c.userInput) === c.value);
     
     if (allCorrect) {
-      const baseScore = 50;
+      const baseScore = 3;
       setScore(s => s + baseScore);
       setMessage("Ajoyib!");
       
@@ -406,7 +406,7 @@ export default function NumberPyramidGame({ onBack }: NumberPyramidGameProps) {
 
             <div className="flex flex-col gap-2 mb-6 px-8 text-sm">
               <div className="flex justify-between items-center">
-                <span className="text-white font-bold">+50 💎</span>
+                <span className="text-white font-bold">+3 💎</span>
                 <span className="text-gray-500">har bir to'g'ri piramida</span>
               </div>
               <div className="flex justify-between items-center">

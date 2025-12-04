@@ -241,7 +241,7 @@ export default function MathPairsGame({ onBack }: MathPairsGameProps) {
           setCards(current => current.map(c => 
             (c.id === id1 || c.id === id2) ? { ...c, state: "matched" } : c
           ));
-          setScore(s => s + 10);
+          setScore(s => s + 1);
           
           const newStreak = correctStreak + 1;
           setCorrectStreak(newStreak);
@@ -348,7 +348,7 @@ export default function MathPairsGame({ onBack }: MathPairsGameProps) {
 
             <div className="flex flex-col gap-2 mb-6 px-8">
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">+10 💎</span>
+                <span className="text-foreground font-medium">+1 💎</span>
                 <span className="text-[var(--foreground-muted)] text-sm">mos kelganda</span>
               </div>
               <div className="flex justify-between items-center">

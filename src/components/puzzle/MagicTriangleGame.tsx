@@ -298,7 +298,7 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
 
   const handleWin = useCallback(() => {
     setIsWin(true);
-    const baseScore = 10;
+    const baseScore = 3;
     const timeBonus = Math.floor(timeLeft / 10);
     const totalScore = baseScore + timeBonus;
     setScore((s) => s + totalScore);
@@ -457,7 +457,7 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
 
             <div className="flex flex-col gap-2 mb-6 px-8">
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">+10 💎</span>
+                <span className="text-foreground font-medium">+3 💎</span>
                 <span className="text-[var(--foreground-muted)] text-sm">har bir yechim uchun</span>
               </div>
               <div className="flex justify-between items-center">
