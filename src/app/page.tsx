@@ -8,19 +8,25 @@ import { getUserGems } from "@/lib/gamification";
 export default function Home() {
   const [points, setPoints] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isLoadingPoints, setIsLoadingPoints] = useState(true);
   const [debugUserId, setDebugUserId] = useState<string | null>(null);
 
   useEffect(() => {
     // Initialize user session on mount
     const initSession = async () => {
-      const userId = await initializeUserSession('math');
-      if (userId) {
-        setIsInitialized(true);
-        setDebugUserId(userId);
-        const gems = await getUserGems(userId);
-        setPoints(gems);
+      try {
+        const userId = await initializeUserSession('math');
+        if (userId) {
+          setIsInitialized(true);
+          setDebugUserId(userId);
+          const gems = await getUserGems(userId);
+          setPoints(gems);
+        }
+      } catch (error) {
+        console.error("Error initializing session:", error);
+      } finally {
+        setIsLoadingPoints(false);
       }
-      // If userId is null, redirectToMainPlatform was called
     };
 
     initSession();
@@ -36,12 +42,18 @@ export default function Home() {
         {/* Trophy Badge */}
         <Link href="/ustoz-coin" title="Transfer Gems to Ustoz Coin">
           <div className="trophy-badge group flex items-center gap-2 rounded-full px-4 py-2 cursor-pointer transition-all active:scale-95 relative overflow-hidden ring-1 ring-white/10 hover:ring-purple-500/50">
-            {/* Shimmer effect */}
-            <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/5 to-transparent z-0"></div>
+            {/* Shimmer effect - Only visible when loading */}
+            {isLoadingPoints && (
+              <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/5 to-transparent z-0"></div>
+            )}
             
             <span className="text-xl relative z-10">💎</span>
             <span className="text-lg font-semibold text-[color:var(--foreground)] relative z-10">
-              {points}
+              {isLoadingPoints ? (
+                <span className="animate-pulse">...</span>
+              ) : (
+                points
+              )}
             </span>
             
             {/* Vertical Divider */}
