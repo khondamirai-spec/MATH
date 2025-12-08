@@ -106,10 +106,15 @@ export async function createOrUpdateUserSession(
       return { sessionId: newSession?.id || null, error: null };
     }
   } catch (error) {
-    console.error('Error creating/updating user session:', error);
+    // Better error logging for debugging
+    if (error instanceof Error) {
+      console.error('Error creating/updating user session:', error.message, error);
+    } else {
+      console.error('Error creating/updating user session:', JSON.stringify(error), error);
+    }
     return {
       sessionId: null,
-      error: error instanceof Error ? error : new Error('Unknown error'),
+      error: error instanceof Error ? error : new Error(String(error || 'Unknown error')),
     };
   }
 }

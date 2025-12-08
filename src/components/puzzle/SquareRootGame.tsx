@@ -81,35 +81,78 @@ const playTinTinSound = () => {
   }
 };
 
-const buildLevel = (minRange: number, maxRange: number) => {
+const buildLevel = (minRange: number, maxRange: number, usedQuestions: Set<string>) => {
   // Generate a root based on level range
-  // Level 1: 2-10, Level 2: 2-20, Level 3: 2-30
   const maxRoot = Math.min(Math.floor(Math.sqrt(maxRange)), 30);
   const minRoot = Math.max(2, Math.floor(Math.sqrt(minRange)));
-  const root = Math.floor(Math.random() * (maxRoot - minRoot + 1)) + minRoot;
-  const square = root * root;
   
-  // Generate distractors
-  const options = new Set<number>();
-  options.add(root);
+  let root: number;
+  let square: number;
+  let questionKey: string;
+  let isSquareQuestion: boolean;
+  let attempts = 0;
+  const maxAttempts = 50;
   
-  while (options.size < 4) {
-    const offset = Math.floor(Math.random() * 5) + 1;
-    const sign = Math.random() > 0.5 ? 1 : -1;
-    const distractor = root + (offset * sign);
+  // Try to generate a unique question
+  do {
+    root = Math.floor(Math.random() * (maxRoot - minRoot + 1)) + minRoot;
+    square = root * root;
     
-    if (distractor > 0 && !options.has(distractor)) {
-      options.add(distractor);
+    // 50% chance for square question (e.g., 6²), 50% for square root (e.g., √36)
+    isSquareQuestion = Math.random() < 0.5;
+    questionKey = isSquareQuestion ? `square_${root}` : `sqrt_${square}`;
+    attempts++;
+  } while (usedQuestions.has(questionKey) && attempts < maxAttempts);
+  
+  // Add to used questions
+  usedQuestions.add(questionKey);
+  
+  let expression: string;
+  let solution: number;
+  
+  if (isSquareQuestion) {
+    // Square question: "6²" with answer 36
+    expression = `${root}²`;
+    solution = square;
+    
+    // Generate distractors around the square value
+    const options = new Set<number>();
+    options.add(square);
+    
+    while (options.size < 4) {
+      const offset = Math.floor(Math.random() * (root * 2)) + 1;
+      const sign = Math.random() > 0.5 ? 1 : -1;
+      const distractor = square + (offset * sign);
+      
+      if (distractor > 0 && !options.has(distractor)) {
+        options.add(distractor);
+      }
     }
+    
+    const shuffledOptions = Array.from(options).sort(() => Math.random() - 0.5);
+    return { expression, solution, options: shuffledOptions };
+  } else {
+    // Square root question: "√36" with answer 6
+    expression = `√${square}`;
+    solution = root;
+    
+    // Generate distractors around the root value
+    const options = new Set<number>();
+    options.add(root);
+    
+    while (options.size < 4) {
+      const offset = Math.floor(Math.random() * 5) + 1;
+      const sign = Math.random() > 0.5 ? 1 : -1;
+      const distractor = root + (offset * sign);
+      
+      if (distractor > 0 && !options.has(distractor)) {
+        options.add(distractor);
+      }
+    }
+    
+    const shuffledOptions = Array.from(options).sort(() => Math.random() - 0.5);
+    return { expression, solution, options: shuffledOptions };
   }
-
-  const shuffledOptions = Array.from(options).sort(() => Math.random() - 0.5);
-
-  return {
-    expression: `√${square}`,
-    solution: root,
-    options: shuffledOptions
-  };
 };
 
 interface SquareRootGameProps {
@@ -134,6 +177,7 @@ export default function SquareRootGame({ onBack }: SquareRootGameProps) {
   
   const isFirstLoad = useRef(true);
   const hasAnswered = useRef(false);
+  const usedQuestions = useRef(new Set<string>());
 
   // Get current level config
   const currentLevel = levels[currentLevelIndex] || null;
@@ -153,8 +197,8 @@ export default function SquareRootGame({ onBack }: SquareRootGameProps) {
           console.error('Failed to fetch minigame:', minigameError);
           setLevels([
             { id: '1', level: 1, number_range_min: 4, number_range_max: 100, question_count: 10 },
-            { id: '2', level: 2, number_range_min: 4, number_range_max: 400, question_count: 25 },
-            { id: '3', level: 3, number_range_min: 4, number_range_max: 900, question_count: 35 },
+            { id: '2', level: 2, number_range_min: 100, number_range_max: 625, question_count: 25 },
+            { id: '3', level: 3, number_range_min: 400, number_range_max: 1600, question_count: 35 },
           ]);
           setIsLoadingLevels(false);
           return;
@@ -169,8 +213,8 @@ export default function SquareRootGame({ onBack }: SquareRootGameProps) {
         if (levelError || !levelData || levelData.length === 0) {
           setLevels([
             { id: '1', level: 1, number_range_min: 4, number_range_max: 100, question_count: 10 },
-            { id: '2', level: 2, number_range_min: 4, number_range_max: 400, question_count: 25 },
-            { id: '3', level: 3, number_range_min: 4, number_range_max: 900, question_count: 35 },
+            { id: '2', level: 2, number_range_min: 100, number_range_max: 625, question_count: 25 },
+            { id: '3', level: 3, number_range_min: 400, number_range_max: 1600, question_count: 35 },
           ]);
         } else {
           setLevels(levelData);
@@ -179,8 +223,8 @@ export default function SquareRootGame({ onBack }: SquareRootGameProps) {
         console.error('Error fetching levels:', error);
         setLevels([
           { id: '1', level: 1, number_range_min: 4, number_range_max: 100, question_count: 10 },
-          { id: '2', level: 2, number_range_min: 4, number_range_max: 400, question_count: 25 },
-          { id: '3', level: 3, number_range_min: 4, number_range_max: 900, question_count: 35 },
+          { id: '2', level: 2, number_range_min: 100, number_range_max: 625, question_count: 25 },
+          { id: '3', level: 3, number_range_min: 400, number_range_max: 1600, question_count: 35 },
         ]);
       }
       setIsLoadingLevels(false);
@@ -223,7 +267,8 @@ export default function SquareRootGame({ onBack }: SquareRootGameProps) {
     
     const { expression, solution, options: newOptions } = buildLevel(
       currentLevel.number_range_min,
-      currentLevel.number_range_max
+      currentLevel.number_range_max,
+      usedQuestions.current
     );
     setEquation(expression);
     setAnswer(solution);
@@ -323,6 +368,7 @@ export default function SquareRootGame({ onBack }: SquareRootGameProps) {
     setGamePhase('tutorial');
     isFirstLoad.current = true;
     hasAnswered.current = false;
+    usedQuestions.current.clear();
   };
 
   // Loading
@@ -342,20 +388,20 @@ export default function SquareRootGame({ onBack }: SquareRootGameProps) {
       <div className="relative flex flex-col h-screen bg-background text-foreground p-4 max-w-md mx-auto overflow-hidden">
         <div className="flex-1 flex items-center justify-center">
           <div className="w-full bg-[var(--surface)] rounded-3xl p-4 pb-5 border border-[var(--foreground-muted)]/10 shadow-2xl">
-            <h2 className="text-lg font-bold text-center mb-4 text-foreground">√ Kvadrat Ildiz</h2>
+            <h2 className="text-lg font-bold text-center mb-4 text-foreground">Kvadrat va Ildiz</h2>
             
             <div className="bg-background rounded-2xl p-4 mb-4 relative overflow-hidden border border-[var(--foreground-muted)]/20 mx-3 shadow-inner">
               <div className="text-center text-2xl font-bold mb-4 text-foreground">
-                √64
+                √64 yoki 8²
               </div>
               <div className="grid grid-cols-2 gap-2 px-6">
-                <div className="h-10 bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] rounded-xl flex items-center justify-center text-white font-bold text-sm">8</div>
-                <div className="h-10 bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] opacity-30 rounded-xl flex items-center justify-center text-foreground/50 text-sm">4</div>
+                <div className="h-10 bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] rounded-xl flex items-center justify-center text-white font-bold text-sm">8 / 64</div>
+                <div className="h-10 bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] opacity-30 rounded-xl flex items-center justify-center text-foreground/50 text-sm">4 / 16</div>
               </div>
             </div>
 
             <p className="text-center text-[var(--foreground-muted)] text-xs mb-4 leading-relaxed px-3">
-              To'g'ri kvadrat ildizni tanlang.<br/>
+              Kvadrat va kvadrat ildizni toping.<br/>
               Qanchalik ko'p to'g'ri yechsangiz,<br/>
               savol qiyinlashadi.
             </p>
@@ -504,7 +550,7 @@ export default function SquareRootGame({ onBack }: SquareRootGameProps) {
 
       {/* Game Title */}
       <div className="flex items-center justify-center gap-2 text-[var(--foreground-muted)] mb-12">
-        <span className="uppercase tracking-widest text-sm font-semibold">KVADRAT ILDIZ</span>
+        <span className="uppercase tracking-widest text-sm font-semibold">KVADRAT VA ILDIZ</span>
       </div>
 
       {/* Problem Display */}
