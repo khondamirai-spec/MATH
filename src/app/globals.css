@@ -136,6 +136,86 @@ body {
   box-shadow: 0 10px 30px color-mix(in srgb, var(--button-shadow) 60%, transparent);
 }
 
+/* Home page responsive styles */
+@media (max-width: 640px) {
+  /* Make buttons responsive - allow them to grow if needed */
+  .game-btn.h-28 {
+    min-height: 6.5rem;
+    height: auto;
+    padding-top: 0.875rem;
+    padding-bottom: 0.875rem;
+  }
+
+  /* Reduce button text size on mobile */
+  .game-btn .text-2xl,
+  .game-btn .md\:text-3xl {
+    font-size: 1.25rem !important;
+    line-height: 1.3;
+  }
+
+  /* Reduce icon sizes on mobile */
+  .game-btn svg[width="28"],
+  .game-btn svg[height="28"] {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .game-btn .h-10 svg,
+  .game-btn .w-10 svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  /* Reduce gap between buttons */
+  .flex.flex-col.gap-5 {
+    gap: 1rem !important;
+  }
+
+  /* Reduce title section margin */
+  .mb-12 {
+    margin-bottom: 1.5rem !important;
+  }
+}
+
+/* For very short screens */
+@media (max-height: 600px) and (max-width: 640px) {
+  /* Reduce main padding */
+  main.flex.flex-1 {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+
+  /* Reduce title section */
+  .mb-12 {
+    margin-bottom: 1rem !important;
+  }
+
+  .mb-12 h1 {
+    font-size: 1.75rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .mb-12 p {
+    font-size: 0.875rem !important;
+  }
+
+  /* Smaller buttons */
+  .game-btn.h-28 {
+    min-height: 5.5rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .game-btn .text-2xl,
+  .game-btn .md\:text-3xl {
+    font-size: 1.125rem !important;
+  }
+
+  .flex.flex-col.gap-5 {
+    gap: 0.75rem !important;
+  }
+}
+
 /* Math puzzle page */
 .math-puzzle-page {
   min-height: 100vh;
@@ -254,7 +334,7 @@ body {
 .math-card {
   background: var(--math-card-gradient, linear-gradient(135deg, #14b8a6 0%, #06b6d4 55%, #3b82f6 100%));
   border-radius: 1.5rem; /* rounded-3xl */
-  padding: 0 1.5rem; /* px-6 */
+  padding: 1rem 1.5rem; /* Added vertical padding */
   box-shadow: 0 4px 15px var(--button-shadow);
   border: 1px solid rgba(255, 255, 255, 0.18);
   display: flex;
@@ -262,8 +342,9 @@ body {
   justify-content: space-between;
   gap: 1rem;
   position: relative;
-  height: 7rem; /* h-28 same as home button */
+  min-height: 7rem; /* Changed from height to min-height for flexibility */
   color: #f8fbff;
+  overflow: hidden; /* Prevent content overflow */
 }
 
 .math-card::after {
@@ -291,6 +372,14 @@ body {
   flex-shrink: 0;
 }
 
+.math-card-text {
+  flex: 1;
+  min-width: 0; /* Allow text to shrink */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .math-card-text h2 {
   margin: 0;
   font-size: 1.125rem;
@@ -302,6 +391,7 @@ body {
   margin: 0.2rem 0 0;
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.75);
+  line-height: 1.2;
 }
 
 .math-card-text .math-divider {
@@ -353,6 +443,68 @@ body {
   }
 
   .math-card {
-    padding: 0 1rem;
+    padding: 0.875rem 1rem; /* Added vertical padding for smaller screens */
+    min-height: 6.5rem; /* Slightly smaller min-height on mobile */
+    gap: 0.75rem; /* Reduced gap on mobile */
+  }
+
+  .math-card-text h2 {
+    font-size: 1rem; /* Slightly smaller title on mobile */
+  }
+
+  .math-card-subtitle {
+    font-size: 0.8rem; /* Slightly smaller subtitle on mobile */
+    margin: 0.15rem 0 0;
+  }
+
+  .math-icon {
+    height: 2.25rem;
+    width: 2.25rem; /* Slightly smaller icon on mobile */
+  }
+
+  .math-play-button {
+    height: 2.5rem;
+    width: 2.5rem; /* Slightly smaller button on mobile */
+  }
+
+  .math-score-line {
+    font-size: 0.8rem; /* Slightly smaller score text on mobile */
+  }
+}
+
+/* For very short screens (landscape phones, small devices) */
+@media (max-height: 600px) and (max-width: 640px) {
+  .math-card {
+    padding: 0.75rem 1rem;
+    min-height: 6rem;
+    gap: 0.65rem;
+  }
+
+  .math-card-text h2 {
+    font-size: 0.95rem;
+    line-height: 1.2;
+  }
+
+  .math-card-subtitle {
+    font-size: 0.75rem;
+    margin: 0.1rem 0 0;
+  }
+
+  .math-card-text .math-divider {
+    margin: 0.25rem 0;
+  }
+
+  .math-icon {
+    height: 2rem;
+    width: 2rem;
+  }
+
+  .math-play-button {
+    height: 2.25rem;
+    width: 2.25rem;
+  }
+
+  .math-score-line {
+    font-size: 0.75rem;
   }
 }

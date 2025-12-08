@@ -321,41 +321,41 @@ export default function MathGridGame({ onBack }: MathGridGameProps) {
     return (
       <div className="relative flex flex-col h-screen bg-background text-foreground p-4 max-w-md mx-auto overflow-hidden">
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-full bg-[var(--surface)] rounded-3xl p-6 pb-8 border border-[var(--foreground-muted)]/10 shadow-2xl">
-            <h2 className="text-xl font-bold text-center mb-6 text-foreground">🔢 Matematik To'r</h2>
+          <div className="w-full bg-[var(--surface)] rounded-3xl p-4 pb-5 border border-[var(--foreground-muted)]/10 shadow-2xl">
+            <h2 className="text-lg font-bold text-center mb-4 text-foreground">🔢 Matematik To'r</h2>
             
-            <div className="bg-background p-4 rounded-xl mb-6 border border-[var(--foreground-muted)]/20">
-              <div className="text-4xl font-bold text-foreground mb-4">21</div>
-              <h3 className="text-foreground font-bold text-xl mb-2">Ko'rsatilgan javobga yetish uchun<br/>to'rdan raqamlarni tanlang</h3>
+            <div className="bg-background p-3 rounded-xl mb-4 border border-[var(--foreground-muted)]/20">
+              <div className="text-3xl font-bold text-foreground mb-3">21</div>
+              <h3 className="text-foreground font-bold text-sm mb-1.5">Ko'rsatilgan javobga yetish uchun<br/>to'rdan raqamlarni tanlang</h3>
               
               {/* Mini Grid Visual */}
-              <div className="grid grid-cols-6 gap-1 w-full max-w-[200px] mx-auto opacity-50 mb-4">
+              <div className="grid grid-cols-6 gap-0.5 w-full max-w-[160px] mx-auto opacity-50 mb-3">
                 {Array.from({ length: 18 }).map((_, i) => (
-                  <div key={i} className="aspect-square bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] rounded-sm text-[6px] flex items-center justify-center text-white">
+                  <div key={i} className="aspect-square bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] rounded-sm text-[5px] flex items-center justify-center text-white">
                     {Math.floor(Math.random()*9)+1}
                   </div>
                 ))}
               </div>
             </div>
 
-            <p className="text-[var(--foreground-muted)] text-sm mb-6 leading-relaxed px-4">
+            <p className="text-[var(--foreground-muted)] text-xs mb-4 leading-relaxed px-3">
               Yuqorida ko'rsatilgan javobga yetish uchun matematik to'rdan raqamlarni tanlang. Qanchalik ko'p to'g'ri yechsangiz, raqamlar kattalashadi.
             </p>
 
-            <div className="flex flex-col gap-3 mb-8 px-8">
+            <div className="flex flex-col gap-2 mb-4 px-6">
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">+1 💎</span>
-                <span className="text-[var(--foreground-muted)] text-sm">to'g'ri javob uchun</span>
+                <span className="text-foreground font-medium text-xs">+1 💎</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">to'g'ri javob uchun</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">⏱️ 60s</span>
-                <span className="text-[var(--foreground-muted)] text-sm">vaqt tugaganda o'yin tugaydi</span>
+                <span className="text-foreground font-medium text-xs">⏱️ 60s</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">vaqt tugaganda o'yin tugaydi</span>
               </div>
             </div>
 
             <button 
               onClick={startGame}
-              className="w-full py-4 rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold tracking-wide shadow-lg shadow-orange-900/20 active:scale-95 transition-transform uppercase text-sm"
+              className="w-full py-3 rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold tracking-wide shadow-lg shadow-orange-900/20 active:scale-95 transition-transform uppercase text-xs"
             >
               Boshlash
             </button>

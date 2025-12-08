@@ -427,14 +427,14 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
     return (
       <div className="relative flex flex-col h-screen bg-background text-foreground p-4 max-w-md mx-auto overflow-hidden font-sans">
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-full bg-[var(--surface)] rounded-3xl p-6 pb-8 border border-[var(--foreground-muted)]/10 shadow-2xl">
-            <h2 className="text-xl font-bold text-center mb-4 text-foreground">🔺 Sehrli Uchburchak</h2>
+          <div className="w-full bg-[var(--surface)] rounded-3xl p-4 pb-5 border border-[var(--foreground-muted)]/10 shadow-2xl">
+            <h2 className="text-lg font-bold text-center mb-3 text-foreground">🔺 Sehrli Uchburchak</h2>
             
-            <div className="bg-background p-4 rounded-xl mb-4 border border-[var(--foreground-muted)]/20">
-              <div className="text-4xl font-bold text-foreground mb-3">🎯</div>
-              <h3 className="text-foreground font-bold text-lg mb-2">6 ta raqamni uchburchakka joylashtiring</h3>
+            <div className="bg-background p-3 rounded-xl mb-3 border border-[var(--foreground-muted)]/20">
+              <div className="text-3xl font-bold text-foreground mb-2">🎯</div>
+              <h3 className="text-foreground font-bold text-sm mb-1.5">6 ta raqamni uchburchakka joylashtiring</h3>
               
-              <div className="relative w-24 h-24 mx-auto my-4">
+              <div className="relative w-20 h-20 mx-auto my-3">
                 <svg className="w-full h-full" viewBox="0 0 100 100">
                   <polygon points="50,10 10,90 90,90" fill="none" stroke="rgba(109,40,217,0.4)" strokeWidth="2"/>
                   {[
@@ -451,32 +451,32 @@ export default function MagicTriangleGame({ onBack }: MagicTriangleGameProps) {
               </div>
             </div>
 
-            <p className="text-[var(--foreground-muted)] text-sm mb-4 leading-relaxed px-2">
+            <p className="text-[var(--foreground-muted)] text-xs mb-3 leading-relaxed px-2">
               Har bir tomon yig'indisi <span className="text-[#c026d3] font-bold">maqsad raqamiga</span> teng bo'ladigan qilib joylashtiring. Daraja oshgani sari raqamlar kattaroq bo'ladi.
             </p>
 
-            <div className="flex flex-col gap-2 mb-6 px-8">
+            <div className="flex flex-col gap-1.5 mb-4 px-6">
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">+3 💎</span>
-                <span className="text-[var(--foreground-muted)] text-sm">har bir yechim uchun</span>
+                <span className="text-foreground font-medium text-xs">+3 💎</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">har bir yechim uchun</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">+bonus</span>
-                <span className="text-[var(--foreground-muted)] text-sm">qolgan vaqt uchun</span>
+                <span className="text-foreground font-medium text-xs">+bonus</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">qolgan vaqt uchun</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">❤️ → 💔</span>
-                <span className="text-[var(--foreground-muted)] text-sm">vaqt tugaganda yurak sinadi</span>
+                <span className="text-foreground font-medium text-xs">❤️ → 💔</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">vaqt tugaganda yurak sinadi</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">3 ❤️</span>
-                <span className="text-[var(--foreground-muted)] text-sm">barcha yuraklar sinsa, o'yin tugaydi</span>
+                <span className="text-foreground font-medium text-xs">3 ❤️</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">barcha yuraklar sinsa, o'yin tugaydi</span>
               </div>
             </div>
 
             <button 
               onClick={startGame}
-              className="w-full py-4 rounded-full text-white font-bold tracking-wide shadow-lg active:scale-95 transition-transform uppercase text-sm"
+              className="w-full py-3 rounded-full text-white font-bold tracking-wide shadow-lg active:scale-95 transition-transform uppercase text-xs"
               style={{ background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 55%, #c026d3 100%)' }}
             >
               Boshlash

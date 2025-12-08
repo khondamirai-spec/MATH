@@ -399,39 +399,39 @@ export default function MentalArithmeticGame({ onBack }: MentalArithmeticGamePro
     return (
       <div className="relative flex flex-col h-screen bg-background text-foreground p-4 max-w-md mx-auto overflow-hidden">
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-full bg-[var(--surface)] rounded-3xl p-6 pb-8 border border-[var(--foreground-muted)]/10 shadow-2xl">
-            <h2 className="text-xl font-bold text-center mb-6 text-foreground">🧠 Og'zaki Hisob</h2>
+          <div className="w-full bg-[var(--surface)] rounded-3xl p-4 pb-5 border border-[var(--foreground-muted)]/10 shadow-2xl">
+            <h2 className="text-lg font-bold text-center mb-4 text-foreground">🧠 Og'zaki Hisob</h2>
             
-            <div className="bg-background rounded-2xl p-6 mb-6 border border-[var(--foreground-muted)]/20 mx-4 text-center">
-              <div className="text-4xl font-bold mb-2">4</div>
-              <div className="text-sm text-[var(--foreground-muted)]">Ketma-ketlikni eslab qoling</div>
+            <div className="bg-background rounded-2xl p-4 mb-4 border border-[var(--foreground-muted)]/20 mx-3 text-center">
+              <div className="text-3xl font-bold mb-1.5">4</div>
+              <div className="text-xs text-[var(--foreground-muted)]">Ketma-ketlikni eslab qoling</div>
             </div>
 
-            <p className="text-center text-[var(--foreground-muted)] text-sm mb-6 leading-relaxed px-4">
+            <p className="text-center text-[var(--foreground-muted)] text-xs mb-4 leading-relaxed px-3">
               Raqam va amal birma-bir ko'rsatiladi.<br/>
               Eslab qoling va oxirgi javobni yozing.<br/>
               Qanchalik ko'p to'g'ri yechsangiz,<br/>
               raqamlar kattalashadi.
             </p>
 
-            <div className="flex flex-col gap-3 mb-6 px-8">
+            <div className="flex flex-col gap-2 mb-4 px-6">
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">+2 💎</span>
-                <span className="text-[var(--foreground-muted)] text-sm">to'g'ri javob uchun</span>
+                <span className="text-foreground font-medium text-xs">+2 💎</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">to'g'ri javob uchun</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">❤️ → 💔</span>
-                <span className="text-[var(--foreground-muted)] text-sm">noto'g'ri javobda yurak sinadi</span>
+                <span className="text-foreground font-medium text-xs">❤️ → 💔</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">noto'g'ri javobda yurak sinadi</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">3 ❤️</span>
-                <span className="text-[var(--foreground-muted)] text-sm">barcha yuraklar sinsa, o'yin tugaydi</span>
+                <span className="text-foreground font-medium text-xs">3 ❤️</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">barcha yuraklar sinsa, o'yin tugaydi</span>
               </div>
             </div>
 
             <button 
               onClick={() => startGame()}
-              className="w-full py-4 rounded-full bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] text-white font-bold tracking-wide shadow-lg shadow-orange-900/20 active:scale-95 transition-transform uppercase text-sm"
+              className="w-full py-3 rounded-full bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] text-white font-bold tracking-wide shadow-lg shadow-orange-900/20 active:scale-95 transition-transform uppercase text-xs"
             >
               Boshlash
             </button>

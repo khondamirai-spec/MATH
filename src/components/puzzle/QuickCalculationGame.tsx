@@ -315,69 +315,69 @@ export default function QuickCalculationGame({ onBack }: QuickCalculationGamePro
     return (
       <div className="relative flex flex-col h-screen bg-background text-foreground p-4 max-w-md mx-auto overflow-hidden">
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-full bg-[var(--surface)] rounded-3xl p-6 pb-8 border border-[var(--foreground-muted)]/10 shadow-2xl">
-            <h2 className="text-xl font-bold text-center mb-6 text-foreground">⚡ Tez Hisoblash</h2>
+          <div className="w-full bg-[var(--surface)] rounded-3xl p-4 pb-5 border border-[var(--foreground-muted)]/10 shadow-2xl">
+            <h2 className="text-lg font-bold text-center mb-4 text-foreground">⚡ Tez Hisoblash</h2>
             
-            <div className="bg-background rounded-2xl p-5 mb-5 relative overflow-hidden border border-[var(--foreground-muted)]/20 mx-2 shadow-inner">
-              <div className="flex justify-between items-center mb-3 opacity-50">
-                <div className="w-7 h-7 rounded-full bg-[var(--surface)] flex items-center justify-center border border-[var(--foreground-muted)]/10">
-                  <span className="text-xs text-foreground">‹</span>
+            <div className="bg-background rounded-2xl p-4 mb-4 relative overflow-hidden border border-[var(--foreground-muted)]/20 mx-2 shadow-inner">
+              <div className="flex justify-between items-center mb-2 opacity-50">
+                <div className="w-6 h-6 rounded-full bg-[var(--surface)] flex items-center justify-center border border-[var(--foreground-muted)]/10">
+                  <span className="text-[10px] text-foreground">‹</span>
                 </div>
-                <div className="flex gap-1 text-xs font-bold text-foreground">
+                <div className="flex gap-1.5 text-[10px] font-bold text-foreground">
                   <span>💎</span> 0
                 </div>
               </div>
               
-              <div className="w-full h-1 bg-[var(--foreground-muted)]/20 rounded-full mb-2 overflow-hidden">
+              <div className="w-full h-0.5 bg-[var(--foreground-muted)]/20 rounded-full mb-2 overflow-hidden">
                 <div className="h-full w-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500"></div>
               </div>
               
-              <div className="text-center text-[10px] font-mono text-[var(--foreground-muted)] mb-3">60s</div>
+              <div className="text-center text-[9px] font-mono text-[var(--foreground-muted)] mb-2">60s</div>
               
               {/* Next Question Preview */}
-              <div className="mb-3 opacity-50 scale-90 origin-left">
-                <div className="text-[8px] uppercase tracking-wider text-[var(--foreground-muted)] mb-0.5">Keyingi</div>
-                <div className="text-xs font-mono text-[var(--foreground-muted)]">3 + 7</div>
+              <div className="mb-2 opacity-50 scale-90 origin-left">
+                <div className="text-[7px] uppercase tracking-wider text-[var(--foreground-muted)] mb-0.5">Keyingi</div>
+                <div className="text-[10px] font-mono text-[var(--foreground-muted)]">3 + 7</div>
               </div>
               
               {/* Sample Equation Display */}
-              <div className="text-center text-xl font-bold text-foreground flex justify-center items-center gap-2">
+              <div className="text-center text-lg font-bold text-foreground flex justify-center items-center gap-2">
                 <span>8 × 5</span>
                 <span>=</span>
-                <div className="w-10 h-8 bg-[var(--surface)] rounded-lg border border-[var(--foreground-muted)]/20 flex items-center justify-center">
-                  <span className="text-base text-cyan-500 animate-pulse">|</span>
+                <div className="w-8 h-7 bg-[var(--surface)] rounded-lg border border-[var(--foreground-muted)]/20 flex items-center justify-center">
+                  <span className="text-sm text-cyan-500 animate-pulse">|</span>
                 </div>
               </div>
             </div>
 
-            <p className="text-center text-[var(--foreground-muted)] text-sm mb-6 leading-relaxed px-4">
+            <p className="text-center text-[var(--foreground-muted)] text-xs mb-4 leading-relaxed px-3">
               Tenglamalarni iloji boricha tez yeching.<br/>
               Qanchalik ko'p to'g'ri yechsangiz,<br/>
               savol qiyinlashadi.
             </p>
             
-            <div className="flex flex-col gap-2 mb-6 px-8">
+            <div className="flex flex-col gap-2 mb-4 px-6">
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">+1s</span>
-                <span className="text-[var(--foreground-muted)] text-sm">har bir to'g'ri javob uchun</span>
+                <span className="text-foreground font-medium text-xs">+1s</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">har bir to'g'ri javob uchun</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">+1 💎</span>
-                <span className="text-[var(--foreground-muted)] text-sm">to'g'ri javob uchun</span>
+                <span className="text-foreground font-medium text-xs">+1 💎</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">to'g'ri javob uchun</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">❤️ → 💔</span>
-                <span className="text-[var(--foreground-muted)] text-sm">vaqt tugaganda yurak sinadi</span>
+                <span className="text-foreground font-medium text-xs">❤️ → 💔</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">vaqt tugaganda yurak sinadi</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">3 ❤️</span>
-                <span className="text-[var(--foreground-muted)] text-sm">barcha yuraklar sinsa, o'yin tugaydi</span>
+                <span className="text-foreground font-medium text-xs">3 ❤️</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">barcha yuraklar sinsa, o'yin tugaydi</span>
               </div>
             </div>
 
             <button 
               onClick={startGame}
-              className="w-full py-4 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold tracking-wide shadow-lg shadow-cyan-900/20 active:scale-95 transition-transform uppercase text-sm"
+              className="w-full py-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold tracking-wide shadow-lg shadow-cyan-900/20 active:scale-95 transition-transform uppercase text-xs"
             >
               Boshlash
             </button>

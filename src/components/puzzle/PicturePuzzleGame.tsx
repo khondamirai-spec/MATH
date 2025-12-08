@@ -430,67 +430,67 @@ export default function PicturePuzzleGame({ onBack }: PicturePuzzleGameProps) {
     return (
       <div className="relative flex flex-col h-screen bg-[var(--background)] text-[var(--foreground)] p-4 max-w-md mx-auto overflow-hidden">
         <div className="flex-1 flex items-center justify-center">
-          <div className="bg-[#1a1a1a] p-6 pb-8 rounded-3xl w-full border-t border-gray-800">
-            <h2 className="text-2xl font-bold text-white text-center mb-4">🖼️ Rasm Boshqotirma</h2>
+          <div className="bg-[#1a1a1a] p-4 pb-5 rounded-3xl w-full border-t border-gray-800">
+            <h2 className="text-lg font-bold text-white text-center mb-3">🖼️ Rasm Boshqotirma</h2>
             
-            <div className="bg-black/50 p-4 rounded-xl mb-4">
-              <div className="flex flex-col gap-3 items-center mb-3">
-                <div className="flex items-center gap-2">
-                  <svg width="24" height="24" viewBox="0 0 24 24" className="stroke-[#7c3aed] stroke-[2.5] fill-none">
+            <div className="bg-black/50 p-3 rounded-xl mb-3">
+              <div className="flex flex-col gap-2 items-center mb-2">
+                <div className="flex items-center gap-1.5">
+                  <svg width="20" height="20" viewBox="0 0 24 24" className="stroke-[#7c3aed] stroke-[2.5] fill-none">
                     <rect x="3" y="3" width="18" height="18" rx="1" />
                   </svg>
-                  <span className="text-gray-400 text-sm">+</span>
-                  <svg width="24" height="24" viewBox="0 0 24 24" className="stroke-[#7c3aed] stroke-[2.5] fill-none">
+                  <span className="text-gray-400 text-xs">+</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" className="stroke-[#7c3aed] stroke-[2.5] fill-none">
                     <rect x="3" y="3" width="18" height="18" rx="1" />
                   </svg>
-                  <span className="text-gray-400 text-sm">+</span>
-                  <svg width="24" height="24" viewBox="0 0 24 24" className="stroke-[#7c3aed] stroke-[2.5] fill-none">
+                  <span className="text-gray-400 text-xs">+</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" className="stroke-[#7c3aed] stroke-[2.5] fill-none">
                     <rect x="3" y="3" width="18" height="18" rx="1" />
                   </svg>
-                  <span className="text-gray-400 text-sm mx-1">=</span>
-                  <span className="text-white font-bold">9</span>
+                  <span className="text-gray-400 text-xs mx-1">=</span>
+                  <span className="text-white font-bold text-sm">9</span>
                 </div>
                 
-                <div className="flex items-center gap-2 mt-1">
-                  <svg width="24" height="24" viewBox="0 0 24 24" className="stroke-[#7c3aed] stroke-[2.5] fill-none">
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <svg width="20" height="20" viewBox="0 0 24 24" className="stroke-[#7c3aed] stroke-[2.5] fill-none">
                     <rect x="3" y="3" width="18" height="18" rx="1" />
                   </svg>
-                  <span className="text-gray-400 text-sm">+</span>
-                  <svg width="24" height="24" viewBox="0 0 24 24" className="stroke-[#7c3aed] stroke-[2.5] fill-none">
+                  <span className="text-gray-400 text-xs">+</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" className="stroke-[#7c3aed] stroke-[2.5] fill-none">
                     <circle cx="12" cy="12" r="9" />
                   </svg>
-                  <span className="text-gray-400 text-sm mx-1">=</span>
-                  <div className="w-8 h-8 rounded-full bg-[#4a4a4a] flex items-center justify-center">
-                    <span className="text-gray-400 text-sm">?</span>
+                  <span className="text-gray-400 text-xs mx-1">=</span>
+                  <div className="w-6 h-6 rounded-full bg-[#4a4a4a] flex items-center justify-center">
+                    <span className="text-gray-400 text-xs">?</span>
                   </div>
                 </div>
               </div>
               
-              <p className="text-white font-bold text-center text-lg">Har bir shaklning<br/>qiymatini toping</p>
+              <p className="text-white font-bold text-center text-sm">Har bir shaklning<br/>qiymatini toping</p>
             </div>
             
-            <p className="text-gray-400 text-sm text-center mb-6 leading-relaxed">
+            <p className="text-gray-400 text-xs text-center mb-4 leading-relaxed">
               Berilgan tenglamalardan har bir shakl raqamini toping va oxirgi tenglamani yeching. Qanchalik ko'p to'g'ri yechsangiz, raqamlar kattalashadi.
             </p>
 
-            <div className="flex flex-col gap-2 mb-6 px-8 text-sm">
+            <div className="flex flex-col gap-1.5 mb-4 px-6 text-xs">
               <div className="flex justify-between items-center">
                 <span className="text-white font-bold">+2 💎</span>
-                <span className="text-gray-500">to'g'ri javob uchun</span>
+                <span className="text-gray-500 text-[10px]">to'g'ri javob uchun</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-white font-medium">❤️ → 💔</span>
-                <span className="text-gray-500">noto'g'ri javobda yurak sinadi</span>
+                <span className="text-gray-500 text-[10px]">noto'g'ri javobda yurak sinadi</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-white font-medium">3 ❤️</span>
-                <span className="text-gray-500">barcha yuraklar sinsa, o'yin tugaydi</span>
+                <span className="text-gray-500 text-[10px]">barcha yuraklar sinsa, o'yin tugaydi</span>
               </div>
             </div>
 
             <button 
               onClick={startGame}
-              className="w-full py-4 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold tracking-wide shadow-lg shadow-blue-900/20 active:scale-95 transition-transform uppercase text-sm"
+              className="w-full py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold tracking-wide shadow-lg shadow-blue-900/20 active:scale-95 transition-transform uppercase text-xs"
             >
               BOSHLASH
             </button>

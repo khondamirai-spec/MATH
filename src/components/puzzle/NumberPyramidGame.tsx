@@ -372,11 +372,11 @@ export default function NumberPyramidGame({ onBack }: NumberPyramidGameProps) {
     return (
       <div className="relative flex flex-col h-screen bg-black text-white p-3 max-w-md mx-auto overflow-hidden font-sans">
         <div className="flex-1 flex items-center justify-center">
-          <div className="bg-[#1a1a1a] p-6 pb-8 rounded-3xl w-full border-t border-gray-800">
-            <h2 className="text-2xl font-bold text-white text-center mb-4">🔺 Raqamli Piramida</h2>
+          <div className="bg-[#1a1a1a] p-4 pb-5 rounded-3xl w-full border-t border-gray-800">
+            <h2 className="text-lg font-bold text-white text-center mb-3">🔺 Raqamli Piramida</h2>
             
-            <div className="bg-black/50 p-4 rounded-xl mb-4">
-              <svg viewBox="0 0 200 120" className="w-full max-w-[200px] mx-auto mb-3">
+            <div className="bg-black/50 p-3 rounded-xl mb-3">
+              <svg viewBox="0 0 200 120" className="w-full max-w-[160px] mx-auto mb-2">
                 <defs>
                   <linearGradient id="demoPink" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#581c87" />
@@ -385,43 +385,43 @@ export default function NumberPyramidGame({ onBack }: NumberPyramidGameProps) {
                   </linearGradient>
                 </defs>
                 <rect x="75" y="5" width="50" height="30" rx="4" fill="url(#demoPink)" />
-                <text x="100" y="26" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">283</text>
+                <text x="100" y="26" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">283</text>
                 <rect x="48" y="40" width="50" height="30" rx="4" fill="url(#demoPink)" />
-                <text x="73" y="61" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">159</text>
+                <text x="73" y="61" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">159</text>
                 <rect x="102" y="40" width="50" height="30" rx="4" fill="#1f1f1f" stroke="#333" />
-                <text x="127" y="61" textAnchor="middle" fill="#666" fontSize="14" fontWeight="bold">?</text>
+                <text x="127" y="61" textAnchor="middle" fill="#666" fontSize="12" fontWeight="bold">?</text>
                 <rect x="21" y="75" width="50" height="30" rx="4" fill="url(#demoPink)" />
-                <text x="46" y="96" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">50</text>
+                <text x="46" y="96" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">50</text>
                 <rect x="75" y="75" width="50" height="30" rx="4" fill="#1f1f1f" stroke="#333" />
                 <rect x="129" y="75" width="50" height="30" rx="4" fill="url(#demoPink)" />
-                <text x="154" y="96" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">18</text>
+                <text x="154" y="96" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">18</text>
               </svg>
               
-              <p className="text-white font-bold text-center text-lg">ikki katakchaning yig'indisi<br/>yuqori katakchada</p>
+              <p className="text-white font-bold text-center text-sm">ikki katakchaning yig'indisi<br/>yuqori katakchada</p>
             </div>
             
-            <p className="text-gray-400 text-sm text-center mb-6 leading-relaxed">
+            <p className="text-gray-400 text-xs text-center mb-4 leading-relaxed">
               Ketma-ket katakchalarning yig'indisi yuqori katakchaga joylashtirilishi kerak. Qanchalik ko'p to'g'ri yechsangiz, raqamlar kattalashadi.
             </p>
 
-            <div className="flex flex-col gap-2 mb-6 px-8 text-sm">
+            <div className="flex flex-col gap-1.5 mb-4 px-6 text-xs">
               <div className="flex justify-between items-center">
                 <span className="text-white font-bold">+3 💎</span>
-                <span className="text-gray-500">har bir to'g'ri piramida</span>
+                <span className="text-gray-500 text-[10px]">har bir to'g'ri piramida</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-white font-medium">❤️ → 💔</span>
-                <span className="text-gray-500">vaqt tugaganda yurak sinadi</span>
+                <span className="text-gray-500 text-[10px]">vaqt tugaganda yurak sinadi</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-white font-medium">3 ❤️</span>
-                <span className="text-gray-500">barcha yuraklar sinsa, o'yin tugaydi</span>
+                <span className="text-gray-500 text-[10px]">barcha yuraklar sinsa, o'yin tugaydi</span>
               </div>
             </div>
 
             <button 
               onClick={startGame}
-              className="w-full py-4 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold tracking-wide shadow-lg shadow-blue-900/20 active:scale-95 transition-transform uppercase text-sm"
+              className="w-full py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold tracking-wide shadow-lg shadow-blue-900/20 active:scale-95 transition-transform uppercase text-xs"
             >
               BOSHLASH
             </button>

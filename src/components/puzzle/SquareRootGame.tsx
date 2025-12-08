@@ -341,43 +341,43 @@ export default function SquareRootGame({ onBack }: SquareRootGameProps) {
     return (
       <div className="relative flex flex-col h-screen bg-background text-foreground p-4 max-w-md mx-auto overflow-hidden">
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-full bg-[var(--surface)] rounded-3xl p-6 pb-8 border border-[var(--foreground-muted)]/10 shadow-2xl">
-            <h2 className="text-xl font-bold text-center mb-6 text-foreground">√ Kvadrat Ildiz</h2>
+          <div className="w-full bg-[var(--surface)] rounded-3xl p-4 pb-5 border border-[var(--foreground-muted)]/10 shadow-2xl">
+            <h2 className="text-lg font-bold text-center mb-4 text-foreground">√ Kvadrat Ildiz</h2>
             
-            <div className="bg-background rounded-2xl p-6 mb-6 relative overflow-hidden border border-[var(--foreground-muted)]/20 mx-4 shadow-inner">
-              <div className="text-center text-3xl font-bold mb-6 text-foreground">
+            <div className="bg-background rounded-2xl p-4 mb-4 relative overflow-hidden border border-[var(--foreground-muted)]/20 mx-3 shadow-inner">
+              <div className="text-center text-2xl font-bold mb-4 text-foreground">
                 √64
               </div>
-              <div className="grid grid-cols-2 gap-2 px-8">
-                <div className="h-12 bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] rounded-xl flex items-center justify-center text-white font-bold">8</div>
-                <div className="h-12 bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] opacity-30 rounded-xl flex items-center justify-center text-foreground/50">4</div>
+              <div className="grid grid-cols-2 gap-2 px-6">
+                <div className="h-10 bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] rounded-xl flex items-center justify-center text-white font-bold text-sm">8</div>
+                <div className="h-10 bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] opacity-30 rounded-xl flex items-center justify-center text-foreground/50 text-sm">4</div>
               </div>
             </div>
 
-            <p className="text-center text-[var(--foreground-muted)] text-sm mb-6 leading-relaxed px-4">
+            <p className="text-center text-[var(--foreground-muted)] text-xs mb-4 leading-relaxed px-3">
               To'g'ri kvadrat ildizni tanlang.<br/>
               Qanchalik ko'p to'g'ri yechsangiz,<br/>
               savol qiyinlashadi.
             </p>
 
-            <div className="flex flex-col gap-3 mb-6 px-8">
+            <div className="flex flex-col gap-2 mb-4 px-6">
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">+1 💎</span>
-                <span className="text-[var(--foreground-muted)] text-sm">to'g'ri javob uchun</span>
+                <span className="text-foreground font-medium text-xs">+1 💎</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">to'g'ri javob uchun</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">❤️ → 💔</span>
-                <span className="text-[var(--foreground-muted)] text-sm">noto'g'ri javobda yurak sinadi</span>
+                <span className="text-foreground font-medium text-xs">❤️ → 💔</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">noto'g'ri javobda yurak sinadi</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">3 ❤️</span>
-                <span className="text-[var(--foreground-muted)] text-sm">barcha yuraklar sinsa, o'yin tugaydi</span>
+                <span className="text-foreground font-medium text-xs">3 ❤️</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">barcha yuraklar sinsa, o'yin tugaydi</span>
               </div>
             </div>
 
             <button 
               onClick={startGame}
-              className="w-full py-4 rounded-full bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] text-white font-bold tracking-wide shadow-lg shadow-orange-900/20 active:scale-95 transition-transform uppercase text-sm"
+              className="w-full py-3 rounded-full bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] text-white font-bold tracking-wide shadow-lg shadow-orange-900/20 active:scale-95 transition-transform uppercase text-xs"
             >
               Boshlash
             </button>

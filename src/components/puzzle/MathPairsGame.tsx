@@ -315,51 +315,51 @@ export default function MathPairsGame({ onBack }: MathPairsGameProps) {
     return (
       <div className="relative flex flex-col h-screen bg-background text-foreground p-4 max-w-md mx-auto overflow-hidden">
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-full bg-[var(--surface)] rounded-3xl p-6 pb-8 border border-[var(--foreground-muted)]/10 shadow-2xl">
-            <h2 className="text-xl font-bold text-center mb-6 text-foreground">🃏 Matematik Juftliklar</h2>
+          <div className="w-full bg-[var(--surface)] rounded-3xl p-4 pb-5 border border-[var(--foreground-muted)]/10 shadow-2xl">
+            <h2 className="text-lg font-bold text-center mb-4 text-foreground">🃏 Matematik Juftliklar</h2>
             
-            <div className="bg-background rounded-2xl p-4 mb-5 relative overflow-hidden border border-[var(--foreground-muted)]/20 mx-2 shadow-inner">
+            <div className="bg-background rounded-2xl p-3 mb-4 relative overflow-hidden border border-[var(--foreground-muted)]/20 mx-2 shadow-inner">
               {/* Mini Card Grid - showing match example */}
-              <div className="grid grid-cols-4 gap-1.5 mb-3">
+              <div className="grid grid-cols-4 gap-1 mb-2">
                 <div className="aspect-[4/5] rounded-lg bg-[var(--surface)] border border-[var(--foreground-muted)]/20 flex items-center justify-center">
-                  <span className="text-sm text-[var(--foreground-muted)] opacity-50">?</span>
+                  <span className="text-xs text-[var(--foreground-muted)] opacity-50">?</span>
                 </div>
                 <div className="aspect-[4/5] rounded-lg bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] flex items-center justify-center shadow-sm">
-                  <span className="text-[10px] text-white font-bold">4</span>
+                  <span className="text-[8px] text-white font-bold">4</span>
                 </div>
                 <div className="aspect-[4/5] rounded-lg bg-[var(--surface)] border border-[var(--foreground-muted)]/20 flex items-center justify-center">
-                  <span className="text-sm text-[var(--foreground-muted)] opacity-50">?</span>
+                  <span className="text-xs text-[var(--foreground-muted)] opacity-50">?</span>
                 </div>
                 <div className="aspect-[4/5] rounded-lg bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_50%,#ef4444_100%)] flex items-center justify-center shadow-sm">
-                  <span className="text-[8px] text-white font-bold">2 + 2</span>
+                  <span className="text-[7px] text-white font-bold">2+2</span>
                 </div>
               </div>
               
               <div className="text-center">
-                <span className="text-[10px] text-green-500 font-medium">✓ Mos keldi!</span>
+                <span className="text-[9px] text-green-500 font-medium">✓ Mos keldi!</span>
               </div>
             </div>
 
-            <p className="text-center text-[var(--foreground-muted)] text-sm mb-6 leading-relaxed px-4">
+            <p className="text-center text-[var(--foreground-muted)] text-xs mb-4 leading-relaxed px-3">
               Bir xil qiymatga ega kartochkalarni toping.<br/>
               Raqamni uning matematik tenglamasi bilan moslang.<br/>
               Qanchalik ko'p moslasangiz, raqamlar kattalashadi.
             </p>
 
-            <div className="flex flex-col gap-2 mb-6 px-8">
+            <div className="flex flex-col gap-2 mb-4 px-6">
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">+1 💎</span>
-                <span className="text-[var(--foreground-muted)] text-sm">mos kelganda</span>
+                <span className="text-foreground font-medium text-xs">+1 💎</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">mos kelganda</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">⏱️ 60s</span>
-                <span className="text-[var(--foreground-muted)] text-sm">vaqt tugaganda o'yin tugaydi</span>
+                <span className="text-foreground font-medium text-xs">⏱️ 60s</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">vaqt tugaganda o'yin tugaydi</span>
               </div>
             </div>
 
             <button 
               onClick={startGame}
-              className="w-full py-4 rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold tracking-wide shadow-lg shadow-orange-900/20 active:scale-95 transition-transform uppercase text-sm"
+              className="w-full py-3 rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold tracking-wide shadow-lg shadow-orange-900/20 active:scale-95 transition-transform uppercase text-xs"
             >
               Boshlash
             </button>

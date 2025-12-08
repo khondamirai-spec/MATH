@@ -395,28 +395,28 @@ export default function CorrectAnswerGame({ onBack }: CorrectAnswerGameProps) {
     return (
       <div className="relative flex flex-col h-screen bg-background text-foreground p-4 max-w-md mx-auto overflow-hidden">
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-full bg-[var(--surface)] rounded-3xl p-6 pb-8 border border-[var(--foreground-muted)]/10 shadow-2xl">
-            <h2 className="text-xl font-bold text-center mb-6 text-foreground">❓ To'g'ri Javob</h2>
+          <div className="w-full bg-[var(--surface)] rounded-3xl p-4 pb-5 border border-[var(--foreground-muted)]/10 shadow-2xl">
+            <h2 className="text-lg font-bold text-center mb-4 text-foreground">❓ To'g'ri Javob</h2>
             
             {/* Mini Game Preview */}
-            <div className="bg-background rounded-2xl p-5 mb-5 relative overflow-hidden border border-[var(--foreground-muted)]/20 mx-2 shadow-inner">
+            <div className="bg-background rounded-2xl p-4 mb-4 relative overflow-hidden border border-[var(--foreground-muted)]/20 mx-2 shadow-inner">
               <div className="flex justify-between items-center mb-3 opacity-50">
-                <div className="w-7 h-7 rounded-full bg-[var(--surface)] flex items-center justify-center border border-[var(--foreground-muted)]/10">
-                  <span className="text-xs text-foreground">‹</span>
+                <div className="w-6 h-6 rounded-full bg-[var(--surface)] flex items-center justify-center border border-[var(--foreground-muted)]/10">
+                  <span className="text-[10px] text-foreground">‹</span>
                 </div>
-                <div className="flex gap-1 text-xs font-bold text-foreground">
+                <div className="flex gap-1.5 text-[10px] font-bold text-foreground">
                   <span>💎</span> 0
                 </div>
               </div>
               
-              <div className="w-full h-1 bg-[var(--foreground-muted)]/20 rounded-full mb-4 overflow-hidden">
+              <div className="w-full h-0.5 bg-[var(--foreground-muted)]/20 rounded-full mb-4 overflow-hidden">
                 <div className="h-full w-3/4 bg-gradient-to-r from-slate-900 via-cyan-600 to-cyan-400"></div>
               </div>
               
               {/* Sample Equation Display */}
-              <div className="text-center text-2xl font-bold mb-4 text-foreground flex justify-center items-center gap-2">
-                <div className="w-8 h-8 bg-[var(--surface)] rounded-lg border border-[var(--foreground-muted)]/20 flex items-center justify-center">
-                  <span className="text-base text-[var(--foreground-muted)]">?</span>
+              <div className="text-center text-lg font-bold mb-3 text-foreground flex justify-center items-center gap-2">
+                <div className="w-7 h-7 bg-[var(--surface)] rounded-lg border border-[var(--foreground-muted)]/20 flex items-center justify-center">
+                  <span className="text-xs text-[var(--foreground-muted)]">?</span>
                 </div>
                 <span>×</span>
                 <span>7</span>
@@ -425,11 +425,11 @@ export default function CorrectAnswerGame({ onBack }: CorrectAnswerGameProps) {
               </div>
               
               {/* Mini Option Buttons */}
-              <div className="grid grid-cols-4 gap-2 px-2">
+              <div className="grid grid-cols-4 gap-1.5 px-2">
                 {[5, 3, 8, 6].map((num) => (
                   <div 
                     key={num}
-                    className="aspect-square rounded-lg bg-gradient-to-br from-slate-900 via-cyan-600 to-cyan-400 text-white text-sm font-bold flex items-center justify-center shadow-sm"
+                    className="aspect-square rounded-lg bg-gradient-to-br from-slate-900 via-cyan-600 to-cyan-400 text-white text-xs font-bold flex items-center justify-center shadow-sm"
                   >
                     {num}
                   </div>
@@ -437,30 +437,30 @@ export default function CorrectAnswerGame({ onBack }: CorrectAnswerGameProps) {
               </div>
             </div>
 
-            <p className="text-center text-[var(--foreground-muted)] text-sm mb-6 leading-relaxed">
+            <p className="text-center text-[var(--foreground-muted)] text-xs mb-4 leading-relaxed">
               Tenglamani to'ldirish uchun yo'qolgan sonni toping.<br/>
               Qanchalik ko'p to'g'ri yechsangiz,<br/>
               savol qiyinlashadi.
             </p>
 
-            <div className="flex flex-col gap-3 mb-6 px-4">
+            <div className="flex flex-col gap-2 mb-4 px-3">
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">+1 💎</span>
-                <span className="text-[var(--foreground-muted)] text-sm">to'g'ri javob uchun</span>
+                <span className="text-foreground font-medium text-xs">+1 💎</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">to'g'ri javob uchun</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">❤️ → 💔</span>
-                <span className="text-[var(--foreground-muted)] text-sm">noto'g'ri javobda yurak sinadi</span>
+                <span className="text-foreground font-medium text-xs">❤️ → 💔</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">noto'g'ri javobda yurak sinadi</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">3 ❤️</span>
-                <span className="text-[var(--foreground-muted)] text-sm">barcha yuraklar sinsa, o'yin tugaydi</span>
+                <span className="text-foreground font-medium text-xs">3 ❤️</span>
+                <span className="text-[var(--foreground-muted)] text-[10px]">barcha yuraklar sinsa, o'yin tugaydi</span>
               </div>
             </div>
 
             <button 
               onClick={startGame}
-              className="w-full py-4 rounded-full bg-gradient-to-r from-slate-900 via-cyan-600 to-cyan-400 text-white font-bold tracking-wide shadow-lg shadow-cyan-900/30 active:scale-95 transition-transform uppercase text-sm"
+              className="w-full py-3 rounded-full bg-gradient-to-r from-slate-900 via-cyan-600 to-cyan-400 text-white font-bold tracking-wide shadow-lg shadow-cyan-900/30 active:scale-95 transition-transform uppercase text-xs"
             >
               Boshlash
             </button>

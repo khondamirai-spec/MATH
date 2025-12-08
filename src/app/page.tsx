@@ -85,7 +85,7 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="flex flex-1 flex-col items-center px-6 pt-8">
+      <main className="flex flex-1 flex-col items-center px-6 pt-8 pb-4 overflow-y-auto">
         {/* Title Section */}
         <div className="mb-12 text-center">
           <h1 className="mb-3 text-4xl font-bold tracking-tight text-[color:var(--foreground)] md:text-5xl">
@@ -97,7 +97,7 @@ export default function Home() {
         </div>
 
         {/* Game Buttons */}
-        <div className="flex w-full max-w-md flex-col gap-5">
+        <div className="flex w-full max-w-md flex-col gap-5 flex-shrink-0">
           {/* Math Puzzle Button */}
           <Link
             href="/math-puzzle"
