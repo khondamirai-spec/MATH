@@ -197,8 +197,8 @@ export default function SquareRootGame({ onBack }: SquareRootGameProps) {
           console.error('Failed to fetch minigame:', minigameError);
           setLevels([
             { id: '1', level: 1, number_range_min: 4, number_range_max: 100, question_count: 10 },
-            { id: '2', level: 2, number_range_min: 100, number_range_max: 625, question_count: 25 },
-            { id: '3', level: 3, number_range_min: 400, number_range_max: 1600, question_count: 35 },
+            { id: '2', level: 2, number_range_min: 100, number_range_max: 625, question_count: 20 },
+            { id: '3', level: 3, number_range_min: 2500, number_range_max: 10000, question_count: 30 },
           ]);
           setIsLoadingLevels(false);
           return;
@@ -213,8 +213,8 @@ export default function SquareRootGame({ onBack }: SquareRootGameProps) {
         if (levelError || !levelData || levelData.length === 0) {
           setLevels([
             { id: '1', level: 1, number_range_min: 4, number_range_max: 100, question_count: 10 },
-            { id: '2', level: 2, number_range_min: 100, number_range_max: 625, question_count: 25 },
-            { id: '3', level: 3, number_range_min: 400, number_range_max: 1600, question_count: 35 },
+            { id: '2', level: 2, number_range_min: 100, number_range_max: 625, question_count: 20 },
+            { id: '3', level: 3, number_range_min: 2500, number_range_max: 10000, question_count: 30 },
           ]);
         } else {
           setLevels(levelData);
@@ -223,8 +223,8 @@ export default function SquareRootGame({ onBack }: SquareRootGameProps) {
         console.error('Error fetching levels:', error);
         setLevels([
           { id: '1', level: 1, number_range_min: 4, number_range_max: 100, question_count: 10 },
-          { id: '2', level: 2, number_range_min: 100, number_range_max: 625, question_count: 25 },
-          { id: '3', level: 3, number_range_min: 400, number_range_max: 1600, question_count: 35 },
+          { id: '2', level: 2, number_range_min: 100, number_range_max: 625, question_count: 20 },
+          { id: '3', level: 3, number_range_min: 2500, number_range_max: 10000, question_count: 30 },
         ]);
       }
       setIsLoadingLevels(false);
